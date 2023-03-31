@@ -7,7 +7,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "jison": "jison src/app/parser/parserSql/sql.jison -o src/app/parser/parserSql/sql.js"
+    "jisonSql": "jison src/app/parser/parserSql/minisql.jison -o src/app/parser/parserSql/minisql.js",
+    "jisonTable": "jison src/app/parser/parserDef/def_bd.jison -o src/app/parser/parserDef/def_bd.js"
   },
   "private": true,
   "dependencies": {

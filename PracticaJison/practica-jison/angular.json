@@ -27,7 +27,9 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "src/app/parser/parserDef/def_bd.js"
+            ]
           },
           "configurations": {
             "production": {
