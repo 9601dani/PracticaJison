@@ -75,18 +75,39 @@ type: INT
 def_values_of: def_values_of COMA table_values
 			| table_values;
 
-table_values: LITERAL IGUAL operacion1;
+table_values: LITERAL IGUAL operacion1 { console.log("Asignando "+$1+ " el valor de " + $3) }
+              | LITERAL IGUAL expr_log { console.log("Asignando "+ $1+ " el valor de "+ $3) } ;
+
+operacion1 : operacion1 MAS operacion1 {$$ = $1 + $3 }
+            | operacion1 MENOS operacion1 {$$ = $1 - $3 }
+            | operacion2 {$$ = $1 };
+operacion2 : operacion2 POR operacion2 {$$ = $1 * $3 }
+             | operacion2 DIVIDE operacion2 {$$ = $1 / $3 }
+             | operacion3 {$$ = $1 };
+operacion3 : ENTERO {$$ = Number($1) }
+            | DECIMAL {$$ =Number( $1) }
+            | CADENA {$$ = $1 }
+            | operacion4 {$$ = $1 };
+operacion4 : LPARENT operacion1 RPARENT {$$ = $2 };
+
+expr_log
+	: expr_rela OR expr_rela {$$ = $1 || $3 }
+	| expr_rela AND expr_rela {$$ = $1 && $3 }
+	| expr_rela {$$ = $1 }
+;
+expr_rela
+	: operacion1 MAYOR_QUE operacion1 {$$ = $1 > $3 }
+	| operacion1 MENOR_QUE operacion1 {$$ = $1 < $3 }
+	| operacion1 MAYOR_IGUAL_QUE operacion1 {$$ = $1 >= $3 }
+	| operacion1 MENOR_IGUAL_QUE operacion1 {$$ = $1 <= $3 }
+	| operacion4 DOBLE_IGUAL operacion4 {$$ = $1 == $3 }
+	| operacion4 NO_IGUAL operacion4 {$$ = $1 != $3 }
+	| NOT expr_rela {$$ = !$2}
+	| LPARENT expr_log RPARENT {$$ = $2}
+	| FALSE {$$ = false}
+  | TRUE {$$ = true}
+;
 
 
-operacion1 : operacion1 MAS operacion1
-            | operacion1 MENOS operacion1
-            | operacion2;
-operacion2 : operacion2 POR operacion2
-             | operacion2 DIVIDE operacion2
-             | operacion3;
-operacion3 : ENTERO
-            | CADENA
-            | operacion4;
-operacion4 : L_PARENT operacion1 R_PARENT
-               | DECIMAL;
+
 
