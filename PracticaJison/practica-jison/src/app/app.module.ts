@@ -5,11 +5,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { EditorTxtComponent } from './components/editor-txt/editor-txt.component';
 import { CodeEditorModule} from "@ngstack/code-editor";
+import { EditorConsultComponent } from './components/editor-consult/editor-consult.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    EditorTxtComponent
+    EditorTxtComponent,
+    EditorConsultComponent
   ],
   imports: [
     BrowserModule,

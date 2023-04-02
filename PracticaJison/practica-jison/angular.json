@@ -28,7 +28,8 @@
               "src/styles.css"
             ],
             "scripts": [
-              "src/app/parser/parserDef/def_bd.js"
+              "src/app/parser/parserDef/def_bd.js",
+              "src/app/parser/parserSql/minisql.js"
             ]
           },
           "configurations": {

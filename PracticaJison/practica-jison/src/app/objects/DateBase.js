@@ -1,6 +1,6 @@
 class DateBase{
   constructor(nameTable,arrayRows) {
-      this.nameTable= name;
+      this.nameTable= nameTable;
       this.arrayRows= arrayRows
   }
   mostrar() {
