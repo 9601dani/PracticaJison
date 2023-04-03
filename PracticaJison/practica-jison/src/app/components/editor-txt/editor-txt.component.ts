@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {CodeModel} from "@ngstack/code-editor";
+import {DefBd} from "../../parser/parserDef/DefBd";
 declare var def_bd: any;
 @Component({
   selector: 'app-editor-txt',
@@ -7,6 +8,7 @@ declare var def_bd: any;
   styleUrls: ['./editor-txt.component.css']
 })
 export class EditorTxtComponent {
+
   theme = 'vs-dark';
   result = '';
 
@@ -25,13 +27,7 @@ export class EditorTxtComponent {
   };
 
   onCompile(){
-    try {
-      const value =def_bd.parse(this.codeModel.value);
-      this.result = `El resultado es: ${value}`;
-      console.log(`hice todo bien`)
-    } catch(error) {
-      console.error(error);
-      this.result = 'Algo salio mal :(';
-    }
+    const parser = new DefBd(this.codeModel.value);
+    parser.parse();
   }
 }

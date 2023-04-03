@@ -54,76 +54,114 @@ space               \n
 %start inic
 %%
 inic : instruc EOF
-      | EOF;
+      {return $1;}
+      | EOF
+;
 
-instruc : instruc dataBase
-			| dataBase;
+instruc : instruc dataBase {$$ = $1; $$.push($2); }
+			| dataBase { $$ = []; $$.push($1);}
+;
 
-dataBase: def_table PUNTO_COMA {console.log("Asignando table: "+ $1)}
-        | def_values_of PUNTO_COMA;
+dataBase: LITERAL LPARENT def_values RPARENT PUNTO_COMA def_table_of { $$= new yy.DBTable(new yy.DataB($1,$3), $6);}
+        | def_table_of { $$= new yy.Stmt($1)} /* aqui esta el error*/
+;
 
-def_table: LITERAL LPARENT def_values RPARENT { console.log(" property "+$1 +" value "+ $3) };
+def_values: def_values COMA properties {$$ = $1; $$.push($3);}
+			| properties { $$ = []; $$.push($1); }
+;
 
-def_values: def_values COMA properties { $$ = " , "+$3 }
-			| properties { $$ =$1 } ;
+properties: LITERAL type { $$ = new yy.Propiedad($1, $2)};
 
-properties: LITERAL type { $$ = $1 +" TIPO-> " +$2 };
+type: INT { $$ = yy.TypePropiedad.INT}
+	| DECIMAL { $$ =  yy.TypePropiedad.DECIMAL}
+	| STRING { $$ =  yy.TypePropiedad.STRING}
+	| BOOLEAN { $$ =  yy.TypePropiedad.BOOLEAN};
 
-type: INT { $$ = "int"}
-	| DECIMAL { $$ = "decimal"}
-	| STRING { $$ = "string"}
-	| BOOLEAN { $$ = "boolean"};
+def_table_of
+           : def_table_of PUNTO_COMA def_values_of {$$ = $1; $$.push($3);}
+           | def_values_of PUNTO_COMA {$$ = []; $$.push($1); }
+;
 
-def_values_of: def_values_of COMA table_values
-			| table_values ;
+def_values_of: def_values_of COMA table_values {$$ = $1; $$.push($3);}
+			| table_values { $$ = []; $$.push($1); }
+;
 
-table_values: LITERAL IGUAL a { console.log("Asignando "+$1+ " el valor de " + $3); }
+table_values: LITERAL IGUAL a { $$= new yy.Atributo($3,$1) }
 ;
 
 a
   : a OR b
-    { $$ = $1 || $3}
+    { $$ = new yy.TypeProStmt($1 || $3, yy.TypePropiedad.BOOLEAN)}
   | b
     { $$ = $1; }
   ;
 
 b
   : b AND c
-    { $$ = $1 && $3}
+     { $$ = new yy.TypeProStmt($1 && $3, yy.TypePropiedad.BOOLEAN)}
   | c
     { $$ = $1; }
   ;
 
-c : NOT c { $$= !$2}
+c : NOT c  { $$ = new yy.TypeProStmt(!$2, yy.TypePropiedad.BOOLEAN)}
    | d  { $$= $1}
    ;
 
-d: d DOBLE_IGUAL e {$$ = $1 == $3 }
-  |d NO_IGUAL e {$$ = $1 != $3 }
-  |d MENOR_QUE e {$$ = $1 < $3 }
-  |d MENOR_IGUAL_QUE e {$$ = $1 <= $3 }
-  |d MAYOR_QUE e {$$ = $1 > $3 }
-  |d MAYOR_IGUAL_QUE e {$$ = $1 >= $3 }
-  | e
+d: d DOBLE_IGUAL e  { $$ = new yy.TypeProStmt($1 == $3, yy.TypePropiedad.BOOLEAN)}
+  |d NO_IGUAL e  { $$ = new yy.TypeProStmt($1 != $3, yy.TypePropiedad.BOOLEAN)}
+  |d MENOR_QUE e  { $$ = new yy.TypeProStmt($1 < $3, yy.TypePropiedad.BOOLEAN)}
+  |d MENOR_IGUAL_QUE e  { $$ = new yy.TypeProStmt($1 <= $3, yy.TypePropiedad.BOOLEAN)}
+  |d MAYOR_QUE e  { $$ = new yy.TypeProStmt($1 > $3, yy.TypePropiedad.BOOLEAN)}
+  |d MAYOR_IGUAL_QUE e  { $$ = new yy.TypeProStmt($1 >= $3, yy.TypePropiedad.BOOLEAN)}
+  | e {$$=$1}
 ;
 
-e: e MAS f {$$ = $1 + $3 }
-  | e MENOS f {$$ = $1 - $3 }
-  | f
-;
-f: f POR g {$$ = $1 * $3 }
-  | f DIVIDE g {$$ = $1 / $3 }
-  | g
+e: e MAS f
+%{
+    if(($1+$3)% 1 == 0){
+         $$ = new yy.TypeProStmt($1+$3, yy.TypePropiedad.INT);
+    }else{
+         $$ = new yy.TypeProStmt($1 + $3, yy.TypePropiedad.DECIMAL);
+    }
+%}
+  | e MENOS f
+%{
+      if(($1-$3)% 1 == 0){
+         $$ = new yy.TypeProStmt($1 - $3, yy.TypePropiedad.INT);
+      }else{
+         $$ = new yy.TypeProStmt($1 - $3, yy.TypePropiedad.DECIMAL);
+      }
+%}
+  | f {$$=$1}
 ;
 
-g: MENOS h {$$ = -$2 }
+f: f POR g
+%{
+      if(($1*$3)% 1 == 0){
+         $$ = new yy.TypeProStmt($1 * $3 ,yy.TypePropiedad.INT);
+      }else{
+         $$ = new yy.TypeProStmt($1 * $3, yy.TypePropiedad.DECIMAL);
+      }
+%}
+  | f DIVIDE g
+%{
+      if(($1/$3)% 1 == 0){
+         $$ = new yy.TypeProStmt($1 / $3, yy.TypePropiedad.INT);
+      }else{
+         $$ = new yy.TypeProStmt($1 / $3, yy.TypePropiedad.DECIMAL);
+      }
+%}
+  | g {$$=$1}
+;
+
+g: MENOS h {$$ = -$2}
   | MAS h {$$=$2}
-  | h
+  | h {$$=$1}
 ;
 
 h:  ENTERO {$$ = Number($1) }
     | NUM_DECIMAL {$$ =Number( $1) }
-    | CADENA {$$ = $1 }
+    | CADENA {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.STRING);}
     | FALSE {$$ = false}
     | TRUE {$$ = true}
     | LPARENT a RPARENT {$$ = $2 }
