@@ -24,8 +24,11 @@ export class DefBd{
   parse() {
     try {
       this.statements = def_bd.parse(this.source);
-
-      console.log(this.statements);
+      this.statements.forEach((elemento:DBTable)=>{
+        if(elemento.objDb!=null){
+          console.log(elemento)
+        }
+      })
     } catch(error) {
       console.error(error);
     }

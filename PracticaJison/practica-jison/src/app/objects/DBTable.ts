@@ -3,9 +3,16 @@ import {Propiedad} from "./Propiedad";
 import {DataB} from "./DataB";
 export class DBTable {
   objDb!: DataB;
-  statements !: Array<Stmt>;
-  constructor(objDb:DataB, statements: Array<Stmt>) {
+  statem !: Array<Stmt>;
+  constructor(objDb:DataB) {
       this.objDb=objDb;
-      this.statements= statements;
+  }
+
+  static constructo(state:Array<Stmt>,statem: Array<Stmt>){
+
+      statem.forEach((elemento:Stmt, indice:number)=>{
+        state.push(elemento);
+      });
+
   }
 }

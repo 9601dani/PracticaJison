@@ -1,3 +1,6 @@
+%{
+var myObject;
+%}
 %lex
 TRUE              "true"| "TRUE"
 FALSE             "false"| "FALSE"
@@ -58,12 +61,28 @@ inic : instruc EOF
       | EOF
 ;
 
-instruc : instruc dataBase {$$ = $1; $$.push($2); }
-			| dataBase { $$ = []; $$.push($1);}
+instruc : instruc data_base {$$ = $1; $$.push($2); }
+			| data_base { $$ = []; $$.push($1);}
 ;
 
-dataBase: LITERAL LPARENT def_values RPARENT PUNTO_COMA def_table_of { $$= new yy.DBTable(new yy.DataB($1,$3), $6);}
-        | def_table_of { $$= new yy.Stmt($1)} /* aqui esta el error*/
+data_base
+  : def_table  { myObject= $$ = new yy.DBTable($1); }
+  | def_table_of PUNTO_COMA %{
+            if(myObject.statem===undefined){
+              myObject.statem= [];
+              myObject.statem.push($1);
+            }else{
+              myObject.statem.push($1);
+            }
+    %}
+  ;
+
+def_table
+        : name_table LPARENT def_values RPARENT PUNTO_COMA {$$=new yy.DataB($1,$3)}
+;
+
+name_table
+        : LITERAL {$$=$1}
 ;
 
 def_values: def_values COMA properties {$$ = $1; $$.push($3);}
@@ -78,8 +97,8 @@ type: INT { $$ = yy.TypePropiedad.INT}
 	| BOOLEAN { $$ =  yy.TypePropiedad.BOOLEAN};
 
 def_table_of
-           : def_table_of PUNTO_COMA def_values_of {$$ = $1; $$.push($3);}
-           | def_values_of PUNTO_COMA {$$ = []; $$.push($1); }
+           : def_table_of  def_values_of PUNTO_COMA  {$$ = $1; $$.push($2);}
+           | def_values_of  {$$ = []; $$.push($1); }
 ;
 
 def_values_of: def_values_of COMA table_values {$$ = $1; $$.push($3);}
