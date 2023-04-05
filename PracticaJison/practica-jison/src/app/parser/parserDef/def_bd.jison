@@ -1,5 +1,18 @@
 %{
 var myObject;
+var ex=false;
+var tamaño=0;
+let errores_lexicos=[];
+  function addError(linea, columna,simbolo){
+    var n={
+      linea: linea,
+      columna:columna,
+      type: "Lexico",
+      des: "simbolo no reconocido => "+simbolo
+    }
+    errores_lexicos.push(n);
+  }
+
 %}
 %lex
 TRUE              "true"| "TRUE"
@@ -48,7 +61,7 @@ space               \n
                         return 'EOF';
                     %}
 .                   %{
-                        console.log(`Error lexico ${yytext}`);
+                        addError(yylloc.first_line, yylloc.first_column, yytext)
                         return 'INVALID';
                     %}
 /lex
@@ -57,24 +70,61 @@ space               \n
 %start inic
 %%
 inic : instruc EOF
-      {return $1;}
+      %{
+      console.log("aqui va algo")
+          for(let i=0;i<errores_lexicos.length;i++){
+               yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
+            }
+            errores_lexicos=[];
+      %}
       | EOF
+    %{console.log("aqui va algo")
+    for(let i=0;i<errores_lexicos.length;i++){
+            yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
+          }
+          errores_lexicos=[];
+    %}
+
 ;
 
-instruc : instruc data_base {$$ = $1; $$.push($2); }
-			| data_base { $$ = []; $$.push($1);}
+instruc : instruc data_base
+      %{
+      $$ = $1; $$.push($2);
+      %}
+			| data_base
+			%{ $$ = [];
+			$$.push($1);
+			%}
 ;
 
 data_base
-  : def_table  { myObject= $$ = new yy.DBTable($1); }
+  : def_table  %{ myObject= $$ = new yy.DBTable($1);
+        try{
+            yy.BaseDeDatos.añadir(new yy.DBTable($1));
+        }
+        catch(e){
+           yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," "+e));
+        }
+  %}
   | def_table_of PUNTO_COMA %{
-            if(myObject.statem===undefined){
-              myObject.statem= [];
-              myObject.statem.push($1);
+         let tablas = yy.BaseDeDatos.getArrayTable();
+            if(tablas.length===0){
+                yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," no hay una tabla definida anteriormente "));
             }else{
-              myObject.statem.push($1);
+              let table= tablas[tablas.length-1];
+              if(tablas[tablas.length-1].objDb.propiedades.length === tamaño){
+                table.statem.push($1);
+                tamaño=0;
+              }else{
+                    yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," El numero de atributos requeridos no es igual "));
+              }
+
             }
     %}
+    | error
+                 %{
+                             yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
+                 %}
   ;
 
 def_table
@@ -97,12 +147,51 @@ type: INT { $$ = yy.TypePropiedad.INT}
 	| BOOLEAN { $$ =  yy.TypePropiedad.BOOLEAN};
 
 def_table_of
-           : def_table_of  def_values_of PUNTO_COMA  {$$ = $1; $$.push($2);}
-           | def_values_of  {$$ = []; $$.push($1); }
+           : def_table_of  def_values_of PUNTO_COMA  %{
+                if(!ex){
+                   $$ = $1
+                   $$.push($2)
+                   tamaño= $2.length;
+                }
+                ex=false;
+           %}
+           | def_values_of  %{$$ = []; ;
+                      if(!ex){
+                      tamaño= $1.length;
+                        $$.push($1)
+                      }
+                      ex=false;
+           %}
 ;
 
-def_values_of: def_values_of COMA table_values {$$ = $1; $$.push($3);}
-			| table_values { $$ = []; $$.push($1); }
+def_values_of: def_values_of COMA table_values %{
+
+                      for(let i=0; i<$$.length; i++){
+                          if ($$[i].name_atribute===$3.name_atribute){
+                           yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" ya se definio una vez"));
+                          ex=true;
+                          break;
+                          }
+                      }
+                      if(!ex){
+                          $$ = $1;
+                          $$.push($3);
+
+                      }
+              %}
+			| table_values %{
+                      for(let i=0; i<$$.length; i++){
+                        if ($$[i].name_atribute===$1.name_atribute){
+                          yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$1.name_atribute+" ya se definio una vez"));
+                          ex=true;
+                          break;
+                        }
+                      }
+                        if(!ex){
+                          $$ = [];
+                          $$.push($1);
+                        }
+			                %}
 ;
 
 table_values: LITERAL IGUAL a { $$= new yy.Atributo($3,$1) }
@@ -185,7 +274,6 @@ h:  ENTERO {$$ = Number($1) }
     | TRUE {$$ = true}
     | LPARENT a RPARENT {$$ = $2 }
 ;
-
 
 
 

@@ -82,24 +82,23 @@ declare_variables : declare_variables  declare_prod
 ;
 
 declare_prod
-           : DECLARE VARIABLE AS type IGUAL a PUNTO_COMA
-           | DECLARE VARIABLE AS type PUNTO_COMA
-           | DECLARE variablePro PUNTO_COMA
+           : DECLARE variablePro AS type IGUAL a PUNTO_COMA
+           | DECLARE variablePro  AS type PUNTO_COMA
 ;
-
+variablePro: variablePro COMA VARIABLE
+            | VARIABLE
+;
 type: INT { $$ = "int"}
 	| DECIMAL { $$ = "decimal"}
 	| TEXT { $$ = "text"}
 	| BOOLEAN { $$ = "boolean"};
 
-variablePro: variablePro COMA VARIABLE  AS type
-            | VARIABLE
-;
+
 
 state_op: print_stmt
           | SET set_stmt PUNTO_COMA
           | if_stmt
-          | select_stmt
+          | select_stmt PUNTO_COMA
 ;
 print_stmt
         : PRINT LPARENT expr RPARENT PUNTO_COMA
@@ -132,7 +131,33 @@ else_statement
   ;
 
 select_stmt
-          : SELECT name_select FROM LITERAL PUNTO_COMA
+          : SELECT name_select FROM LITERAL select
+;
+select
+     : where_pro
+     | limit_pro
+     | off_set_pro
+     |
+;
+where_pro
+        : WHERE a where
+;
+where
+     : limit_pro
+     | off_set_pro
+     |
+;
+
+limit_pro
+        : LIMIT a
+;
+limit
+    : off_set_pro
+    |
+;
+
+off_set_pro
+          : OFFSET a
 ;
 
 name_select: POR
@@ -191,6 +216,7 @@ h:  ENTERO {$$ = Number($1) }
     | FALSE {$$ = false}
     | TRUE {$$ = true}
     | VARIABLE {$$= $1}
+    | LITERAL {$$=$1}
     | LPARENT a RPARENT {$$ = $2 }
 ;
 

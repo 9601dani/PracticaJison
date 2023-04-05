@@ -1,5 +1,4 @@
 import {Propiedad} from "./Propiedad";
-import {Stmt} from "./Stmt";
 
 export class DataB {
   name_table!:String;

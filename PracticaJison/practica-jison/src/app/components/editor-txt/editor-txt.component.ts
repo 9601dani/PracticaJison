@@ -8,7 +8,6 @@ declare var def_bd: any;
   styleUrls: ['./editor-txt.component.css']
 })
 export class EditorTxtComponent {
-
   theme = 'vs-dark';
   result = '';
 

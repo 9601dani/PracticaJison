@@ -7,6 +7,8 @@ import {Stmt} from "../../objects/Stmt";
 import {TypeProStmt} from "../../objects/TypeProStmt";
 import {DataB} from "../../objects/DataB";
 import {BaseDeDatos} from "../../objects/BaseDeDatos";
+import {DefManageError} from "../../ManageError/DefManageError";
+import {MyErrors} from "../../ManageError/MyErrors";
 declare var def_bd:any;
 export class DefBd{
   private statements : DBTable []=[];
@@ -14,6 +16,10 @@ export class DefBd{
 
   constructor(source:string) {
     this.source=source;
+    BaseDeDatos.getInstancia().clear();
+    MyErrors.getInstanci().clear();
+    def_bd.yy.MyErrors= MyErrors.getInstanci();
+    def_bd.yy.BaseDeDatos= BaseDeDatos.getInstancia();
     def_bd.yy.DataB= DataB;
     def_bd.yy.DBTable= DBTable;
     def_bd.yy.Propiedad= Propiedad;
@@ -21,19 +27,25 @@ export class DefBd{
     def_bd.yy.Atributo= Atributo;
     def_bd.yy.Stmt= Stmt;
     def_bd.yy.TypeProStmt= TypeProStmt;
+    def_bd.yy.DefManageError= DefManageError;
   }
   parse() {
     try {
       var array: Array<DBTable>=[]
       this.statements = def_bd.parse(this.source);
-      this.statements.forEach((elemento:DBTable)=>{
-        if(elemento.objDb!=null){
-          array.push(elemento);
-        }
-      });
-      var object= new BaseDeDatos(array);
+      /*if(this.statements!=undefined){
+        this.statements.forEach((elemento:DBTable)=>{
+          if(elemento.objDb!=null){
+            array.push(elemento);
+          }
+        });
+      }*/
+
+      console.log(BaseDeDatos.getInstancia());
+      console.log(MyErrors.getInstanci())
+      /*var object= new BaseDeDatos(array);*/
     } catch(error) {
-      console.error(error);
+     console.error(error);
     }
   }
 }
