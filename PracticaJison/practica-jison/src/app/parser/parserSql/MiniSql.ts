@@ -7,7 +7,10 @@ import {OperacionBinaria} from "../../models/operacion_binaria";
 import {OperationType} from "../../models/operation_type";
 import {Value, ValueType} from "../../models/value";
 import {Variable, VariableType} from "../../models/variable";
-import {Settear} from "../../models/Settear";
+import {Settear} from "../../models/settear";
+import {IfState} from "../../models/if_state";
+import {ElseState} from "../../models/else_state";
+import {TablaSimbolos} from "../../models/tabla_simbolos";
 
 declare  var minisql:any;
 export class MiniSql{
@@ -27,13 +30,19 @@ export class MiniSql{
     minisql.yy.ValueType= ValueType;
     minisql.yy.Variable= Variable;
     minisql.yy.VariableType= VariableType;
+    minisql.yy.IfState= IfState;
+    minisql.yy.ElseState= ElseState;
     console.log(minisql);
   }
 
   parse(){
     try{
      this.instructions = minisql.parse(this.source);
-      console.log(this.instructions)
+      const table = new TablaSimbolos();
+      this.instructions.forEach(i =>{
+        i.run(table);
+      })
+      console.log(this.instructions);
     }catch(error){
       console.log(error)
     }

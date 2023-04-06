@@ -62,28 +62,25 @@
 %start inic
 %%
 inic
-  : statements EOF
-    { return $1; }
+  : declare_variables statements EOF
+    { $$=$1; $$.push(...$2); return $$; }
   ;
 
 statements
-  : statements  statement
+  : statements  state_op
     { $$ = $1; $$.push($2); }
-  |
-    { $$ = []; }
+  | state_op
+    { $$ = []; $$.push($1)}
   ;
 
-statement
-  :  declare_variables state_op { $$ = $1; $$.push($2); }
-  | state_op  { $$ = []; $$.push($1)}
-;
+
 declare_variables : declare_variables  declare_prod  {$$ = $1; $$.push($2); }
                     | declare_prod { $$ = []; $$.push($1)}
 ;
 
 declare_prod
-           : DECLARE variablePro AS type IGUAL a PUNTO_COMA { $$ = new yy.Declare(this_$.first_line,this_$.first_column,$4,$2,$6)}
-           | DECLARE variablePro  AS type PUNTO_COMA { $$ = new yy.Declare(this_$.first_line,this_$.first_column,$4,$2)}
+           : DECLARE variablePro AS type IGUAL a PUNTO_COMA { $$ = new yy.Declare(this._$.first_line,this._$.first_column,$4,$2,$6)}
+           | DECLARE variablePro  AS type PUNTO_COMA { $$ = new yy.Declare(this._$.first_line,this._$.first_column,$4,$2)}
 ;
 variablePro: variablePro COMA VARIABLE {$$.push($3); $$=$1; }
             | VARIABLE {$$=[]; $$.push($1);}
@@ -94,14 +91,14 @@ type: INT { $$ = yy.VariableType.INT}
 	| BOOLEAN { $$ = yy.VariableType.BOOLEAN};
 
 
-state_op: print_stmt
-          | SET set_stmt PUNTO_COMA
-          | if_stmt
-          | select_stmt PUNTO_COMA
+state_op: print_stmt {$$=$1}
+          | SET set_stmt PUNTO_COMA { $$= new yy.Settear(this._$.first_line,this._$.first_column,$2)}
+          | if_stmt {$$=$1}
+          | select_stmt PUNTO_COMA {$$=$1}
 ;
 print_stmt
         : PRINT LPARENT expr RPARENT PUNTO_COMA
-        {$$= new yy.Print(this_$.first_line,this_$.first_column,$3)}
+        {$$= new yy.Print(this._$.first_line,this._$.first_column,$3)}
 ;
 
 expr : expr COMA a {$$=$1; $$.push($3);}
@@ -109,27 +106,26 @@ expr : expr COMA a {$$=$1; $$.push($3);}
 ;
 
 set_stmt
-       : set_stmt COMA setPro
-       | setPro
+       : set_stmt COMA setPro { $$=$1; $$.push($3);}
+       | setPro  {$$=[]; $$.push($1);}
 ;
 
 setPro: VARIABLE IGUAL a
-    {$$= new yy.Assingment(this_$.first_line,this_$.first_column,$1,$3)}
+    {$$= new yy.Assingment(this._$.first_line,this._$.first_column,$1,$3)}
 ;
 
 if_stmt
-  : IF a THEN prod_stmt else_statement END IF PUNTO_COMA
+  : IF a THEN statements else_statement END IF PUNTO_COMA
+     {$$= new yy.IfState(this._$.first_line,this._$.first_column, $2, $4, $5)}
     |IF a THEN  else_statement END IF PUNTO_COMA
-;
-prod_stmt
-        : prod_stmt statement
-        | statement
-
+     {$$= new yy.IfState(this._$.first_line,this._$.first_column, $2,$4)}
 ;
 
 else_statement
-  : ELSEIF a THEN prod_stmt else_statement
-  | ELSE prod_stmt
+  : ELSEIF a THEN statements else_statement
+     {$$= new yy.IfState(this._$.first_line,this._$.first_column, $2, $4, $5)}
+  | ELSE statements
+      {$$= new yy.ElseState(this._$.first_line,this._$.first_column, $2)}
   |
   ;
 
@@ -174,37 +170,37 @@ names_select: names_select COMA LITERAL
 a
   : INPUT LPARENT CADENA RPARENT
   |a OR b
-    {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.OR,$1, $3)}
+    {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.OR,$1, $3)}
   | b
     { $$ = $1; }
   ;
 
 b
   : b AND c
-    {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.AND,$1, $3)}
+    {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.AND,$1, $3)}
   | c
     { $$ = $1; }
   ;
 
-c : NOT c {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.NOT,$1, $3)}
+c : NOT c {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.NOT,$1, $2)}
    | d  { $$= $1}
    ;
 
-d: d NO_IGUAL e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.NO_IGUAL,$1, $3)}
-  |d MENOR_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOR_QUE,$1, $3)}
-  |d MENOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOR_IGUAL_QUE,$1, $3)}
-  |d MAYOR_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAYOR_QUE,$1, $3)}
-  |d MAYOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAYOR_IGUAL_QUE,$1, $3)}
-  |d IGUAL e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.IGUAL,$1, $3)}}
+d: d NO_IGUAL e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.NO_IGUAL,$1, $3)}
+  |d MENOR_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MENOR_QUE,$1, $3)}
+  |d MENOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MENOR_IGUAL_QUE,$1, $3)}
+  |d MAYOR_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAYOR_QUE,$1, $3)}
+  |d MAYOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAYOR_IGUAL_QUE,$1, $3)}
+  |d IGUAL e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.IGUAL,$1, $3)}}
   | e
 ;
 
-e: e MAS f {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAS,$1, $3)}
-  | e MENOS f {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOS,$1, $3)}
+e: e MAS f {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAS,$1, $3)}
+  | e MENOS f {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MENOS,$1, $3)}
   | f
 ;
-f: f POR g {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.POR,$1, $3)}
-  | f DIVIDE g {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.DIVIDE,$1, $3)}
+f: f POR g {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.POR,$1, $3)}
+  | f DIVIDE g {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.DIVIDE,$1, $3)}
   | g
 ;
 
@@ -213,13 +209,13 @@ g: MENOS h {$$ = -$2 }
   | h
 ;
 
-h:  ENTERO {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.ENTERO)}
-    | NUM_DECIMAL {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.NUM_DECIMAL)}
-    | CADENA {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.CADENA)}
-    | FALSE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.FALSE)}
-    | TRUE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.TRUE)}
-    | VARIABLE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.VARIABLE)}
-    | LITERAL {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.LITERAL)}
+h:  ENTERO {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.ENTERO)}
+    | NUM_DECIMAL {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.NUM_DECIMAL)}
+    | CADENA {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.CADENA)}
+    | FALSE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.FALSE)}
+    | TRUE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.TRUE)}
+    | VARIABLE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.VARIABLE)}
+    | LITERAL {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.LITERAL)}
     | LPARENT a RPARENT {$$ = $2 }
 ;
 
