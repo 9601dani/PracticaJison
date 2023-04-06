@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {CodeModel} from "@ngstack/code-editor";
 import {DefBd} from "../../parser/parserDef/DefBd";
+import {MyErrors} from "../../ManageError/MyErrors";
 declare var def_bd: any;
 @Component({
   selector: 'app-editor-txt',
@@ -29,4 +30,6 @@ export class EditorTxtComponent {
     const parser = new DefBd(this.codeModel.value);
     parser.parse();
   }
+
+  protected readonly MyErrors = MyErrors;
 }

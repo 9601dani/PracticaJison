@@ -85,30 +85,29 @@ var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
 
-      console.log("aqui va algo")
           for(let i=0;i<errores_lexicos.length;i++){
                yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
             }
             errores_lexicos=[];
-
+      
 break;
 case 2:
-console.log("aqui va algo")
+
     for(let i=0;i<errores_lexicos.length;i++){
-             yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
+            yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
           }
           errores_lexicos=[];
-
+    
 break;
 case 3:
 
       this.$ = $$[$0-1]; this.$.push($$[$0]);
-
+      
 break;
 case 4:
  this.$ = [];
 			this.$.push($$[$0]);
-
+			
 break;
 case 5:
  myObject= this.$ = new yy.DBTable($$[$0]);
@@ -118,7 +117,7 @@ case 5:
         catch(e){
            yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," "+e));
         }
-
+  
 break;
 case 6:
 
@@ -135,12 +134,12 @@ case 6:
               }
 
             }
-
+    
 break;
 case 7:
 
                              yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
-
+                 
 break;
 case 8:
 this.$=new yy.DataB($$[$0-4],$$[$0-2])
@@ -152,7 +151,7 @@ case 10:
 this.$ = $$[$0-2]; this.$.push($$[$0]);
 break;
 case 11:
- this.$ = []; this.$.push($$[$0]);
+ this.$ = []; this.$.push($$[$0]); 
 break;
 case 12:
  this.$ = new yy.Propiedad($$[$0-1], $$[$0])
@@ -177,7 +176,7 @@ case 17:
                    tamaño= $$[$0-1].length;
                 }
                 ex=false;
-
+           
 break;
 case 18:
 this.$ = []; ;
@@ -186,7 +185,7 @@ this.$ = []; ;
                         this.$.push($$[$0])
                       }
                       ex=false;
-
+           
 break;
 case 19:
 
@@ -203,7 +202,7 @@ case 19:
                           this.$.push($$[$0]);
 
                       }
-
+              
 break;
 case 20:
 
@@ -218,16 +217,16 @@ case 20:
                           this.$ = [];
                           this.$.push($$[$0]);
                         }
-
+			                
 break;
 case 21:
- this.$= new yy.Atributo($$[$0],$$[$0-2])
+ this.$= new yy.Atributo($$[$0],$$[$0-2]) 
 break;
 case 22:
  this.$ = new yy.TypeProStmt($$[$0-2] || $$[$0], yy.TypePropiedad.BOOLEAN)
 break;
 case 23: case 25:
- this.$ = $$[$0];
+ this.$ = $$[$0]; 
 break;
 case 24:
  this.$ = new yy.TypeProStmt($$[$0-2] && $$[$0], yy.TypePropiedad.BOOLEAN)
@@ -296,10 +295,10 @@ case 41:
 this.$ = -$$[$0]
 break;
 case 44:
-this.$ = Number($$[$0])
+this.$ = Number($$[$0]) 
 break;
 case 45:
-this.$ =Number( $$[$0])
+this.$ =Number( $$[$0]) 
 break;
 case 46:
 this.$ = new yy.TypeProStmt($$[$0], yy.TypePropiedad.STRING);
@@ -311,7 +310,7 @@ case 48:
 this.$ = true
 break;
 case 49:
-this.$ = $$[$0-1]
+this.$ = $$[$0-1] 
 break;
 }
 },
@@ -961,9 +960,9 @@ case 25:return 42;
 break;
 case 26:return 44;
 break;
-case 27: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 48;
+case 27: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 48; 
 break;
-case 28: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 48;
+case 28: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 48; 
 break;
 case 29:return 47;
 break;
@@ -971,17 +970,16 @@ case 30:return 46;
 break;
 case 31:
                           return 14;
-
+                        
 break;
 case 32:
-                        console.log('fin de archivo');
                         return 5;
-
+                    
 break;
 case 33:
                         addError(yy_.yylloc.first_line, yy_.yylloc.first_column, yy_.yytext)
                         return 'INVALID';
-
+                    
 break;
 }
 },

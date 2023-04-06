@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import {CodeModel} from "@ngstack/code-editor";
+import {MiniSql} from "../../parser/parserSql/MiniSql";
 declare var minisql: any;
 @Component({
   selector: 'app-editor-consult',
@@ -26,8 +27,8 @@ export class EditorConsultComponent {
 
   onCompile(){
     try {
-      const value =minisql.parse(this.codeModel.value);
-      this.result = `El resultado es: ${value}`;
+      const par = new MiniSql(this.codeModel.value);
+      par.parse();
       console.log(`hice todo bien`)
     } catch(error) {
       console.error(error);

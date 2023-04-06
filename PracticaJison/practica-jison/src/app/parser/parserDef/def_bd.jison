@@ -57,7 +57,6 @@ space               \n
                           return 'LITERAL';
                         %}
 <<EOF>>             %{
-                        console.log('fin de archivo');
                         return 'EOF';
                     %}
 .                   %{
@@ -71,14 +70,13 @@ space               \n
 %%
 inic : instruc EOF
       %{
-      console.log("aqui va algo")
           for(let i=0;i<errores_lexicos.length;i++){
                yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
             }
             errores_lexicos=[];
       %}
       | EOF
-    %{console.log("aqui va algo")
+    %{
     for(let i=0;i<errores_lexicos.length;i++){
             yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
           }

@@ -74,25 +74,24 @@ statements
   ;
 
 statement
-  :  declare_variables state_op
-  | state_op
+  :  declare_variables state_op { $$ = $1; $$.push($2); }
+  | state_op  { $$ = []; $$.push($1)}
 ;
-declare_variables : declare_variables  declare_prod
-                    | declare_prod
+declare_variables : declare_variables  declare_prod  {$$ = $1; $$.push($2); }
+                    | declare_prod { $$ = []; $$.push($1)}
 ;
 
 declare_prod
-           : DECLARE variablePro AS type IGUAL a PUNTO_COMA
-           | DECLARE variablePro  AS type PUNTO_COMA
+           : DECLARE variablePro AS type IGUAL a PUNTO_COMA { $$ = new yy.Declare(this_$.first_line,this_$.first_column,$4,$2,$6)}
+           | DECLARE variablePro  AS type PUNTO_COMA { $$ = new yy.Declare(this_$.first_line,this_$.first_column,$4,$2)}
 ;
-variablePro: variablePro COMA VARIABLE
-            | VARIABLE
+variablePro: variablePro COMA VARIABLE {$$.push($3); $$=$1; }
+            | VARIABLE {$$=[]; $$.push($1);}
 ;
-type: INT { $$ = "int"}
-	| DECIMAL { $$ = "decimal"}
-	| TEXT { $$ = "text"}
-	| BOOLEAN { $$ = "boolean"};
-
+type: INT { $$ = yy.VariableType.INT}
+	| DECIMAL { $$ = yy.VariableType.DECIMAL}
+	| TEXT { $$ = yy.VariableType.TEXT}
+	| BOOLEAN { $$ = yy.VariableType.BOOLEAN};
 
 
 state_op: print_stmt
@@ -102,10 +101,11 @@ state_op: print_stmt
 ;
 print_stmt
         : PRINT LPARENT expr RPARENT PUNTO_COMA
+        {$$= new yy.Print(this_$.first_line,this_$.first_column,$3)}
 ;
 
-expr : expr COMA a
-       | a
+expr : expr COMA a {$$=$1; $$.push($3);}
+       | a {$$=[]; $$.push($1);}
 ;
 
 set_stmt
@@ -114,14 +114,17 @@ set_stmt
 ;
 
 setPro: VARIABLE IGUAL a
+    {$$= new yy.Assingment(this_$.first_line,this_$.first_column,$1,$3)}
 ;
 
 if_stmt
   : IF a THEN prod_stmt else_statement END IF PUNTO_COMA
+    |IF a THEN  else_statement END IF PUNTO_COMA
 ;
 prod_stmt
         : prod_stmt statement
         | statement
+
 ;
 
 else_statement
@@ -171,37 +174,37 @@ names_select: names_select COMA LITERAL
 a
   : INPUT LPARENT CADENA RPARENT
   |a OR b
-    { $$ = $1 || $3}
+    {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.OR,$1, $3)}
   | b
     { $$ = $1; }
   ;
 
 b
   : b AND c
-    { $$ = $1 && $3}
+    {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.AND,$1, $3)}
   | c
     { $$ = $1; }
   ;
 
-c : NOT c { $$= !$2}
+c : NOT c {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.NOT,$1, $3)}
    | d  { $$= $1}
    ;
 
-d: d NO_IGUAL e {$$ = $1 != $3 }
-  |d MENOR_QUE e {$$ = $1 < $3 }
-  |d MENOR_IGUAL_QUE e {$$ = $1 <= $3 }
-  |d MAYOR_QUE e {$$ = $1 > $3 }
-  |d MAYOR_IGUAL_QUE e {$$ = $1 >= $3 }
-  |d IGUAL e {$$ = $1 == $3 }
+d: d NO_IGUAL e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.NO_IGUAL,$1, $3)}
+  |d MENOR_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOR_QUE,$1, $3)}
+  |d MENOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOR_IGUAL_QUE,$1, $3)}
+  |d MAYOR_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAYOR_QUE,$1, $3)}
+  |d MAYOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAYOR_IGUAL_QUE,$1, $3)}
+  |d IGUAL e {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.IGUAL,$1, $3)}}
   | e
 ;
 
-e: e MAS f {$$ = $1 + $3 }
-  | e MENOS f {$$ = $1 - $3 }
+e: e MAS f {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MAS,$1, $3)}
+  | e MENOS f {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.MENOS,$1, $3)}
   | f
 ;
-f: f POR g {$$ = $1 * $3 }
-  | f DIVIDE g {$$ = $1 / $3 }
+f: f POR g {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.POR,$1, $3)}
+  | f DIVIDE g {$$= new yy.OperacionBinaria(this_$.first_line,this_$.first_column,yy.OperationType.DIVIDE,$1, $3)}
   | g
 ;
 
@@ -210,13 +213,13 @@ g: MENOS h {$$ = -$2 }
   | h
 ;
 
-h:  ENTERO {$$ = Number($1) }
-    | NUM_DECIMAL {$$ =Number( $1) }
-    | CADENA {$$ = $1 }
-    | FALSE {$$ = false}
-    | TRUE {$$ = true}
-    | VARIABLE {$$= $1}
-    | LITERAL {$$=$1}
+h:  ENTERO {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.ENTERO)}
+    | NUM_DECIMAL {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.NUM_DECIMAL)}
+    | CADENA {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.CADENA)}
+    | FALSE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.FALSE)}
+    | TRUE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.TRUE)}
+    | VARIABLE {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.VARIABLE)}
+    | LITERAL {$$= new yy.Value(this_$.first_line,this_$.first_column,$1,yy.ValueType.LITERAL)}
     | LPARENT a RPARENT {$$ = $2 }
 ;
 

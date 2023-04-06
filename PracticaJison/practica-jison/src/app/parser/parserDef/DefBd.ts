@@ -40,10 +40,7 @@ export class DefBd{
           }
         });
       }*/
-
-      console.log(BaseDeDatos.getInstancia());
-      console.log(MyErrors.getInstanci())
-      /*var object= new BaseDeDatos(array);*/
+      /*var models= new BaseDeDatos(array);*/
     } catch(error) {
      console.error(error);
     }
