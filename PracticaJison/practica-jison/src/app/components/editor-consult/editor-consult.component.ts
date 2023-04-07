@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import {CodeModel} from "@ngstack/code-editor";
 import {MiniSql} from "../../parser/parserSql/MiniSql";
+import {MyErrors} from "../../ManageError/MyErrors";
+import {MyErrorsMini} from "../../ManageError/MyErrorsMini";
 declare var minisql: any;
 @Component({
   selector: 'app-editor-consult',
@@ -35,4 +37,7 @@ export class EditorConsultComponent {
       this.result = 'Algo salio mal :(';
     }
   }
+
+    protected readonly MyErrors = MyErrors;
+  protected readonly MyErrorsMini = MyErrorsMini;
 }

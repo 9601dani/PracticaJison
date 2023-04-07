@@ -9,5 +9,14 @@ export class Print extends Instruction{
   }
 
   run(table: TablaSimbolos): any {
+    let texto_final: string="";
+    this.instructions.forEach((elemento)=>{
+      let txt=elemento.run(table);
+      if(txt!=undefined){
+        texto_final+=txt.value+" ";
+      }
+
+    })
+    console.log(texto_final)
   }
 }

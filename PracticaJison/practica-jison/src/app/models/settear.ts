@@ -12,6 +12,14 @@ export class Settear extends Instruction{
   }
 
   run(table: TablaSimbolos): any {
+    if(this.assignments.length==1){
+      this.assignments[0].run(table);
+    }else{
+      this.assignments.forEach((elemento)=>{
+        elemento.run(table);
+      })
+    }
+
   }
 
 }

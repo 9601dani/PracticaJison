@@ -26,11 +26,7 @@ export class Value extends Instruction{
         variable.type= VariableType.TEXT;
         variable.value= String(this.value);
         return  variable;
-      case ValueType.FALSE:
-        variable.type= VariableType.BOOLEAN;
-        variable.value= Boolean(this.value);
-        return  variable;
-      case ValueType.TRUE:
+      case ValueType.BOOLEAN:
         variable.type= VariableType.BOOLEAN;
         variable.value= Boolean(this.value);
         return  variable;
@@ -46,6 +42,7 @@ export class Value extends Instruction{
         Object.assign(variable,vari);
         return variable;
     }
+    console.log("retorne undefined")
     return undefined;
 
   }
@@ -60,5 +57,6 @@ export enum ValueType{
   FALSE,
   TRUE,
   VARIABLE,
-  LITERAL
+  LITERAL,
+  BOOLEAN
 }

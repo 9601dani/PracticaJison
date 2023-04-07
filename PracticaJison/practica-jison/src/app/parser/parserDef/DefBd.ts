@@ -41,6 +41,8 @@ export class DefBd{
         });
       }*/
       /*var models= new BaseDeDatos(array);*/
+      /*ESTE METODO SE DEBE QUITAR*/
+      console.log(BaseDeDatos.getInstancia());
     } catch(error) {
      console.error(error);
     }

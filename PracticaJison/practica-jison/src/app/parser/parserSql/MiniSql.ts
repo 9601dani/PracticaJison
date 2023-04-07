@@ -11,6 +11,8 @@ import {Settear} from "../../models/settear";
 import {IfState} from "../../models/if_state";
 import {ElseState} from "../../models/else_state";
 import {TablaSimbolos} from "../../models/tabla_simbolos";
+import {DefManageError} from "../../ManageError/DefManageError";
+import {MyErrorsMini} from "../../ManageError/MyErrorsMini";
 
 declare  var minisql:any;
 export class MiniSql{
@@ -19,6 +21,9 @@ export class MiniSql{
 
   constructor(source:string) {
     this.source=source
+    MyErrorsMini.getInstanci().clear();
+    minisql.yy.MyErrorsMini= MyErrorsMini.getInstanci()
+    minisql.yy.DefManageError= DefManageError;
     minisql.yy.Declare= Declare;
     minisql.yy.Input= Input;
     minisql.yy.OperacionBinaria= OperacionBinaria;
@@ -42,9 +47,12 @@ export class MiniSql{
       this.instructions.forEach(i =>{
         i.run(table);
       })
-      console.log(this.instructions);
+     console.log(this.instructions);
+      console.log(table)
+      console.log(MyErrorsMini.getInstanci())
     }catch(error){
-      console.log(error)
+     /* console.log(error)*/
+      console.log(MyErrorsMini.getInstanci())
     }
   }
 }

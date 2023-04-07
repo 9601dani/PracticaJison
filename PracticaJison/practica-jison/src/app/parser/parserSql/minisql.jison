@@ -1,3 +1,15 @@
+%{
+let errores_lexicos=[];
+  function addEr(linea, columna,simbolo){
+    var n={
+      linea: linea,
+      columna:columna,
+      type: "Lexico",
+      des: "simbolo no reconocido => "+simbolo
+    }
+    errores_lexicos.push(n);
+  }
+%}
 %lex
 %%
 \s+                      {/*ignore*/}
@@ -34,9 +46,9 @@
 "/"                 return 'DIVIDE';
 ";"                 return 'PUNTO_COMA';
 ","                 return `COMA`;
-"<>"                return 'NO_IGUAL'
-"<="				        return 'MENOR_IGUAL_QUE';
+"<>"                return 'NO_IGUAL';
 ">="				        return 'MAYOR_IGUAL_QUE';
+"<="				        return 'MENOR_IGUAL_QUE';
 "<"					        return 'MENOR_QUE';
 ">"					        return 'MAYOR_QUE';
 "="					        return 'IGUAL';
@@ -53,8 +65,8 @@
                         return "EOF";
                     %}
 .                   %{
-                        console.log(`Error lexico ${yytext}`);
-                        return "INVALID";
+                        addEr(yylloc.first_line, yylloc.first_column, yytext)
+                         return 'INVALID';
                     %}
 /lex
 %left 'MAS' 'MENOS'
@@ -63,7 +75,13 @@
 %%
 inic
   : declare_variables statements EOF
-    { $$=$1; $$.push(...$2); return $$; }
+   %{        $$=$1; $$.push(...$2); return $$;
+            for(let i=0;i<errores_lexicos.length;i++){
+                 yy.MyErrorsMini.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
+              }
+              errores_lexicos=[];
+        %}
+
   ;
 
 statements
@@ -71,18 +89,26 @@ statements
     { $$ = $1; $$.push($2); }
   | state_op
     { $$ = []; $$.push($1)}
+     | error
+                                         %{
+                                                     yy.MyErrorsMini.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
+                                         %}
   ;
 
 
 declare_variables : declare_variables  declare_prod  {$$ = $1; $$.push($2); }
                     | declare_prod { $$ = []; $$.push($1)}
+                    | error
+                                     %{
+                                                 yy.MyErrorsMini.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
+                                     %}
 ;
 
 declare_prod
            : DECLARE variablePro AS type IGUAL a PUNTO_COMA { $$ = new yy.Declare(this._$.first_line,this._$.first_column,$4,$2,$6)}
            | DECLARE variablePro  AS type PUNTO_COMA { $$ = new yy.Declare(this._$.first_line,this._$.first_column,$4,$2)}
 ;
-variablePro: variablePro COMA VARIABLE {$$.push($3); $$=$1; }
+variablePro: variablePro COMA VARIABLE {$$=$1; $$.push($3);  }
             | VARIABLE {$$=[]; $$.push($1);}
 ;
 type: INT { $$ = yy.VariableType.INT}
@@ -95,6 +121,8 @@ state_op: print_stmt {$$=$1}
           | SET set_stmt PUNTO_COMA { $$= new yy.Settear(this._$.first_line,this._$.first_column,$2)}
           | if_stmt {$$=$1}
           | select_stmt PUNTO_COMA {$$=$1}
+
+
 ;
 print_stmt
         : PRINT LPARENT expr RPARENT PUNTO_COMA
@@ -182,7 +210,7 @@ b
     { $$ = $1; }
   ;
 
-c : NOT c {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.NOT,$1, $2)}
+c : NOT c {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.NOT,$2,$2)}
    | d  { $$= $1}
    ;
 
@@ -192,28 +220,28 @@ d: d NO_IGUAL e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_co
   |d MAYOR_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAYOR_QUE,$1, $3)}
   |d MAYOR_IGUAL_QUE e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAYOR_IGUAL_QUE,$1, $3)}
   |d IGUAL e {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.IGUAL,$1, $3)}}
-  | e
+  | e { $$= $1}
 ;
 
 e: e MAS f {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MAS,$1, $3)}
   | e MENOS f {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.MENOS,$1, $3)}
-  | f
+  | f { $$= $1}
 ;
 f: f POR g {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.POR,$1, $3)}
   | f DIVIDE g {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.DIVIDE,$1, $3)}
-  | g
+  | g { $$= $1}
 ;
 
 g: MENOS h {$$ = -$2 }
   | MAS h {$$=$2}
-  | h
+  | h { $$= $1}
 ;
 
 h:  ENTERO {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.ENTERO)}
     | NUM_DECIMAL {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.NUM_DECIMAL)}
     | CADENA {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.CADENA)}
-    | FALSE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.FALSE)}
-    | TRUE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.TRUE)}
+    | FALSE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.BOOLEAN)}
+    | TRUE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.BOOLEAN)}
     | VARIABLE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.VARIABLE)}
     | LITERAL {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.LITERAL)}
     | LPARENT a RPARENT {$$ = $2 }
