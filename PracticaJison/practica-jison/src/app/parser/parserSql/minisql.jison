@@ -197,6 +197,7 @@ names_select: names_select COMA LITERAL
 
 a
   : INPUT LPARENT CADENA RPARENT
+  {$$= new yy.Input(this._$.first_line,this._$.first_column,$3)}
   |a OR b
     {$$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.OR,$1, $3)}
   | b

@@ -84,18 +84,15 @@ performAction: function anonymous(yytext, yyleng, yylineno, yy, yystate /* actio
 var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
-  for(let i=0;i<errores_lexicos.length;i++){
-    yy.MyErrorsMini.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
-  }
-  errores_lexicos=[];
-        this.$=$$[$0-2];
-        this.$.push(...$$[$0-1]);
-        return this.$;
-
-
+        this.$=$$[$0-2]; this.$.push(...$$[$0-1]); return this.$;
+            for(let i=0;i<errores_lexicos.length;i++){
+                 yy.MyErrorsMini.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
+              }
+              errores_lexicos=[];
+        
 break;
 case 2:
- this.$ = $$[$0-1]; this.$.push($$[$0]);
+ this.$ = $$[$0-1]; this.$.push($$[$0]); 
 break;
 case 3: case 6:
  this.$ = []; this.$.push($$[$0])
@@ -103,15 +100,15 @@ break;
 case 4:
 
                                                      yy.MyErrorsMini.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
-
+                                         
 break;
 case 5:
-this.$ = $$[$0-1]; this.$.push($$[$0]);
+this.$ = $$[$0-1]; this.$.push($$[$0]); 
 break;
 case 7:
 
                                                  yy.MyErrorsMini.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
-
+                                     
 break;
 case 8:
  this.$ = new yy.Declare(this._$.first_line,this._$.first_column,$$[$0-3],$$[$0-5],$$[$0-1])
@@ -120,7 +117,7 @@ case 9:
  this.$ = new yy.Declare(this._$.first_line,this._$.first_column,$$[$0-1],$$[$0-3])
 break;
 case 10:
-this.$=$$[$0-2]; this.$.push($$[$0]);
+this.$=$$[$0-2]; this.$.push($$[$0]);  
 break;
 case 11: case 22: case 24:
 this.$=[]; this.$.push($$[$0]);
@@ -170,11 +167,14 @@ break;
 case 29:
 this.$= new yy.ElseState(this._$.first_line,this._$.first_column, $$[$0])
 break;
+case 48:
+this.$= new yy.Input(this._$.first_line,this._$.first_column,$$[$0-1])
+break;
 case 49:
 this.$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.OR,$$[$0-2], $$[$0])
 break;
 case 50: case 52:
- this.$ = $$[$0];
+ this.$ = $$[$0]; 
 break;
 case 51:
 this.$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.AND,$$[$0-2], $$[$0])
@@ -216,7 +216,7 @@ case 66:
 this.$= new yy.OperacionBinaria(this._$.first_line,this._$.first_column,yy.OperationType.DIVIDE,$$[$0-2], $$[$0])
 break;
 case 68:
-this.$ = -$$[$0]
+this.$ = -$$[$0] 
 break;
 case 71:
 this.$= new yy.Value(this._$.first_line,this._$.first_column,$$[$0],yy.ValueType.ENTERO)
@@ -237,7 +237,7 @@ case 77:
 this.$= new yy.Value(this._$.first_line,this._$.first_column,$$[$0],yy.ValueType.LITERAL)
 break;
 case 78:
-this.$ = $$[$0-1]
+this.$ = $$[$0-1] 
 break;
 }
 },
@@ -915,23 +915,23 @@ case 41:return 74;
 break;
 case 42:return 73;
 break;
-case 43: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 54;
+case 43: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 54; 
 break;
-case 44: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 54;
+case 44: yy_.yytext = yy_.yytext.substr(1,yy_.yyleng-2); return 54; 
 break;
 case 45:
                           return 41;
-
+                        
 break;
 case 46:
                         console.log('fin de archivo');
                         return "EOF";
-
+                    
 break;
 case 47:
                         addEr(yy_.yylloc.first_line, yy_.yylloc.first_column, yy_.yytext)
-                        return "INVALID";
-
+                         return 'INVALID';
+                    
 break;
 }
 },

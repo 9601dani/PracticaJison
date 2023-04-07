@@ -1,5 +1,7 @@
 import {Instruction} from "./instruction";
 import {TablaSimbolos} from "./tabla_simbolos";
+import {MyErrorsMini} from "../ManageError/MyErrorsMini";
+import {DefManageError} from "../ManageError/DefManageError";
 
 export class IfState extends Instruction{
 
@@ -19,6 +21,18 @@ export class IfState extends Instruction{
 
   }
   run(table: TablaSimbolos): any {
+  const variable1 = this.instruction.run(table);
+  if(!variable1){
+    MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.column,"Semantico","Error de operacion en IF"));
+  }
+      if(variable1.value==true){
+        this.bloque_verdadero?.forEach((elemento)=>{
+          elemento.run(table)
+        })
+      }else{
+        this.bloque_falso?.run(table);
+      }
+
   }
 
 }

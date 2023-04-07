@@ -12,6 +12,7 @@
     <button class="btn btn-primary m-1" (click)="onCompile()">Consultar</button>
   </div>
   <div class="row" *ngIf="MyErrorsMini.getInstanci().message_error.length!=0">
+    <h5 class="align-content-center"> Presentando tabla de Errores</h5>
     <table class="table">
       <thead>
       <tr>
@@ -22,13 +23,32 @@
       </tr>
       </thead>
       <tbody>
-      <tr *ngFor="let persona of MyErrorsMini.getInstanci().message_error">
-        <td>{{ persona.linea }}</td>
-        <td>{{ persona.columna }}</td>
-        <td>{{ persona.type_error }}</td>
-        <td>{{ persona.descripcion }}</td>
+      <tr *ngFor="let objE of MyErrorsMini.getInstanci().message_error">
+        <td>{{ objE.linea }}</td>
+        <td>{{ objE.columna }}</td>
+        <td>{{ objE.type_error }}</td>
+        <td>{{ objE.descripcion }}</td>
       </tr>
       </tbody>
     </table>
 </div>
+  <div class="row" *ngIf="table_simbolos && MyErrorsMini.getInstanci().message_error.length==0">
+    <h5 class="align-content-center"> Presentando tabla de simbolos</h5>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Valor</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let variable of table_simbolos">
+        <td>{{ variable.id }}</td>
+        <td>{{ variable.mostrarVariable(variable.type) }}</td>
+        <td>{{ variable.value }}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

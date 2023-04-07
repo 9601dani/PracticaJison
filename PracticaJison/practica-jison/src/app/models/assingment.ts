@@ -31,23 +31,28 @@ export class Assingment extends Instruction{
       if(this.verificarTipo(variable1,operation)){
         variable1.value= operation.value;
       }else{
+        console.log("distinto")
         if(variable1.type== VariableType.DECIMAL){
           if(operation.type == VariableType.INT){
             variable1.value= operation.value;
+          }else{
+            MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.value.line,this.value.column,"Semantico","No se puede asignar"+this.id+" una variable "+variable1.mostrarVariable(variable1.type)+"  una variable "+operation.mostrarVariable(operation.type)+" => "+operation.value));
           }
         }else if(variable1.type== VariableType.INT){
           if(operation.type== VariableType.DECIMAL){
             variable1.value= Math.floor(operation.value);
+          }else{
+            MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.value.line,this.value.column,"Semantico","No se puede asignar"+this.id+" una variable "+variable1.mostrarVariable(variable1.type)+"  una variable "+operation.mostrarVariable(operation.type)+" => "+operation.value));
           }
         }else{
-          MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.value.line,this.value.column,"Semantico","No se puede asignar una variable "+variable1.mostrarVariable(variable1.type)+" a una variable "+operation.mostrarVariable(operation.type)));
+          MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.value.line,this.value.column,"Semantico","No se puede asignar"+this.id+" una variable "+variable1.mostrarVariable(variable1.type)+"  una variable "+operation.mostrarVariable(operation.type)+" => "+operation.value));
         }
     }
 
     }
   }
   verificarTipo(variable1: Variable, operation:Variable):Boolean{
-    if(variable1.type== operation.type){
+    if(variable1.type == operation.type){
       return true;
     }
     return false;

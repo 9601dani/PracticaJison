@@ -3,13 +3,17 @@ import {CodeModel} from "@ngstack/code-editor";
 import {MiniSql} from "../../parser/parserSql/MiniSql";
 import {MyErrors} from "../../ManageError/MyErrors";
 import {MyErrorsMini} from "../../ManageError/MyErrorsMini";
+import {TablaSimbolos} from "../../models/tabla_simbolos";
 declare var minisql: any;
+
 @Component({
   selector: 'app-editor-consult',
   templateUrl: './editor-consult.component.html',
   styleUrls: ['./editor-consult.component.css']
 })
 export class EditorConsultComponent {
+  table_simbolos:TablaSimbolos|undefined
+
   theme = 'vs-dark';
   result = '';
 
@@ -28,16 +32,16 @@ export class EditorConsultComponent {
   };
 
   onCompile(){
-    try {
       const par = new MiniSql(this.codeModel.value);
-      par.parse();
-      console.log(`hice todo bien`)
-    } catch(error) {
-      console.error(error);
-      this.result = 'Algo salio mal :(';
-    }
+      this.table_simbolos = par.parse();
+      if(this.table_simbolos){
+        console.log(this.table_simbolos)
+        console.log(`hice todo bien`)
+      }
+
+
   }
 
-    protected readonly MyErrors = MyErrors;
+  protected readonly MyErrors = MyErrors;
   protected readonly MyErrorsMini = MyErrorsMini;
 }

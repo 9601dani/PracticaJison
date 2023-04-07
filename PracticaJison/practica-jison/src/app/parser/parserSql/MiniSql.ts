@@ -40,19 +40,28 @@ export class MiniSql{
     console.log(minisql);
   }
 
-  parse(){
+  parse():TablaSimbolos| undefined{
     try{
      this.instructions = minisql.parse(this.source);
-      const table = new TablaSimbolos();
+      let table = new TablaSimbolos();
+      if(MyErrorsMini.getInstanci().message_error.length>0){
+        return undefined;
+      }
       this.instructions.forEach(i =>{
         i.run(table);
       })
-     console.log(this.instructions);
+/*       console.log(this.instructions);
       console.log(table)
+
+      console.log("retornare la tabla")*/
       console.log(MyErrorsMini.getInstanci())
+      return table;
+      /*console.log(JSON.stringify(this.instructions))*/
     }catch(error){
-     /* console.log(error)*/
+      console.log(error)
       console.log(MyErrorsMini.getInstanci())
+
+      return undefined;
     }
   }
 }
