@@ -12,8 +12,6 @@ export class Assingment extends Instruction{
     super(line,column);
     this.id=id;
     this.value=value;
-
-
   }
 
   run(table: TablaSimbolos): any {

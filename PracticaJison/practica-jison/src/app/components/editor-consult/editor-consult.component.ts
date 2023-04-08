@@ -13,7 +13,7 @@ declare var minisql: any;
 })
 export class EditorConsultComponent {
   table_simbolos:TablaSimbolos|undefined
-
+  myNodes:Node[]=[];
   theme = 'vs-dark';
   result = '';
 
@@ -36,12 +36,30 @@ export class EditorConsultComponent {
       this.table_simbolos = par.parse();
       if(this.table_simbolos){
         console.log(this.table_simbolos)
+        this.myNodes=this.convertToTree(JSON.stringify(this.table_simbolos))
         console.log(`hice todo bien`)
       }
 
 
   }
+  convertToTree(json: any): Node[] {
+    return Object.keys(json).map((key: string) => {
+      const node: Node = {
+        name: key
+      };
+      if (typeof json[key] === 'object') {
+        node.children = this.convertToTree(json[key]);
+      }
+      return node;
+    });
+  }
+
+
 
   protected readonly MyErrors = MyErrors;
   protected readonly MyErrorsMini = MyErrorsMini;
+}
+interface Node {
+  name: string;
+  children?: Node[];
 }

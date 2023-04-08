@@ -159,40 +159,36 @@ else_statement
 
 select_stmt
           : SELECT name_select FROM LITERAL select
+          {$$= new yy.Select(this._$.first_line,this._$.first_column,$2,$4,$5);}
 ;
 select
-     : where_pro
-     | limit_pro
-     | off_set_pro
-     |
+     : where_pro limit_pro off_set_pro
+       {$$= new yy.ConditionSelect(this._$.first_line,this._$.first_column,$1,$2,$3)}
 ;
 where_pro
-        : WHERE a where
-;
-where
-     : limit_pro
-     | off_set_pro
-     |
+        : WHERE a
+        {$$= new yy.Where(this._$.first_line,this._$.first_column,$2);}
+        |
 ;
 
 limit_pro
         : LIMIT a
-;
-limit
-    : off_set_pro
-    |
+          {$$= new yy.Limit(this._$.first_line,this._$.first_column,$2);}
+        |
 ;
 
 off_set_pro
           : OFFSET a
+            {$$= new yy.OffSet(this._$.first_line,this._$.first_column,$2);}
+          |
 ;
 
-name_select: POR
-          | names_select
+name_select: POR {$$=$1}
+          | names_select {$$=$1}
 ;
 
-names_select: names_select COMA LITERAL
-            |LITERAL
+names_select: names_select COMA LITERAL {$$=$1; $$.push($3)}
+            |LITERAL {$$=[]; $$.push($1) }
 ;
 
 a

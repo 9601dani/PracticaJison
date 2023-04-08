@@ -13,6 +13,12 @@ import {ElseState} from "../../models/else_state";
 import {TablaSimbolos} from "../../models/tabla_simbolos";
 import {DefManageError} from "../../ManageError/DefManageError";
 import {MyErrorsMini} from "../../ManageError/MyErrorsMini";
+import {Select} from "../../models/select";
+import {min} from "rxjs";
+import {ConditionSelect} from "../../models/condition_select";
+import {Where} from "../../models/where";
+import {Limit} from "../../models/limit";
+import {OffSet} from "../../models/off_set";
 
 declare  var minisql:any;
 export class MiniSql{
@@ -37,6 +43,11 @@ export class MiniSql{
     minisql.yy.VariableType= VariableType;
     minisql.yy.IfState= IfState;
     minisql.yy.ElseState= ElseState;
+    minisql.yy.Select= Select;
+    minisql.yy.ConditionSelect= ConditionSelect;
+    minisql.yy.Where= Where;
+    minisql.yy.Limit=Limit;
+    minisql.yy.OffSet= OffSet;
     console.log(minisql);
   }
 
@@ -50,8 +61,8 @@ export class MiniSql{
       this.instructions.forEach(i =>{
         i.run(table);
       })
-/*       console.log(this.instructions);
-      console.log(table)
+     console.log(this.instructions);
+     /* console.log(table)
 
       console.log("retornare la tabla")*/
       console.log(MyErrorsMini.getInstanci())
