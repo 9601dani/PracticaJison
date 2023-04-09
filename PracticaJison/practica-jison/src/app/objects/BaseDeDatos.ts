@@ -1,6 +1,7 @@
 import {DBTable} from "./DBTable";
 import {Stmt} from "./Stmt";
-
+import {Instruction} from "../models/instruction";
+declare const ast: Instruction[];
 export class BaseDeDatos{
   private static instancia: BaseDeDatos;
   array_tables!: Array<DBTable>

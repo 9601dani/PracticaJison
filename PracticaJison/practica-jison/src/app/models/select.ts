@@ -57,6 +57,7 @@ export class Select extends Instruction{
               /*for(let j=0;j<registro.statemens.length;j++){
                 respuesta_consulta.push(tabla_seleccionada?.statem.filter((elemento)=> elemento.statemens[i].name_atribute=== this.ids[i]))
               }*/
+              //TODO hay que hacer nuevo array con los ids
 
             })
           }

@@ -12,6 +12,19 @@ let errores_lexicos=[];
     }
     errores_lexicos.push(n);
   }
+  function mostrarVariable(num) {
+    switch (num){
+      case 0:
+        return "INT"
+      case 1:
+        return "STRING"
+      case 2:
+        return "DECIMAL"
+      case 3:
+        return "BOOLEAN"
+    }
+    return "null"
+  }
 
 %}
 %lex
@@ -171,10 +184,24 @@ def_values_of: def_values_of COMA table_values %{
                           break;
                           }
                       }
+                      const propiedad = yy.BaseDeDatos.getArrayTable()
+                                              const yys=propiedad[propiedad.length-1].objDb.propiedades.find(elem=> elem.name_property=== $3.name_atribute)
+                                                    if(!yys){
+                                                     yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" no existe en la tabla"));
+                                                     ex=true;
+                                                    }else{
+                                                                                       if($3.property.type_property != yys.type_property){
+                                                                                        yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" debe ser de tipo "+ mostrarVariable(yys.type_property)));
+                                                                                      ex=true;
+                                                                                       }
+
+                                                                                       }
                       if(!ex){
                           $$ = $1;
                           $$.push($3);
 
+                      }else{
+                      ex=false;
                       }
               %}
 			| table_values %{
@@ -185,9 +212,24 @@ def_values_of: def_values_of COMA table_values %{
                           break;
                         }
                       }
+                       const propiedads = yy.BaseDeDatos.getArrayTable()
+                       const yyss=propiedads[propiedads.length-1].objDb.propiedades.find(elem=> elem.name_property=== $1.name_atribute)
+                             if(!yyss){
+                              yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$1.name_atribute+" no existe en la tabla"));
+                              ex=true;
+                             }else{
+                                  if($1.property.type_property != yyss.type_property){
+                                   yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$1.name_atribute+" debe ser de tipo "+mostrarVariable( yyss.type_property)));
+                                     ex=true;
+                                  }
+
+                                  }
+
                         if(!ex){
                           $$ = [];
                           $$.push($1);
+                        }else{
+                        ex=false;
                         }
 			                %}
 ;
@@ -261,15 +303,15 @@ f: f POR g
 ;
 
 g: MENOS h {$$ = -$2}
-  | MAS h {$$=$2}
+  | MAS h {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.DECIMAL);}
   | h {$$=$1}
 ;
 
-h:  ENTERO {$$ = Number($1) }
-    | NUM_DECIMAL {$$ =Number( $1) }
+h:  ENTERO {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.INT);}
+    | NUM_DECIMAL {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.DECIMAL);}
     | CADENA {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.STRING);}
-    | FALSE {$$ = false}
-    | TRUE {$$ = true}
+    | FALSE {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.BOOLEAN);}
+    | TRUE {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.BOOLEAN);}
     | LPARENT a RPARENT {$$ = $2 }
 ;
 

@@ -5,7 +5,12 @@ import {MyErrors} from "../../ManageError/MyErrors";
 import {MyErrorsMini} from "../../ManageError/MyErrorsMini";
 import {TablaSimbolos} from "../../models/tabla_simbolos";
 import {DefManageError} from "../../ManageError/DefManageError";
-declare var minisql: any;
+import {Instruction} from "../../models/instruction";
+import {DBTable} from "../../objects/DBTable";
+import {Ast} from "../../models/ast";
+ declare var minisql: any;
+declare var ast: DBTable[];
+
 
 @Component({
   selector: 'app-editor-consult',
@@ -77,6 +82,7 @@ export class EditorConsultComponent {
 
   protected readonly MyErrors = MyErrors;
   protected readonly MyErrorsMini = MyErrorsMini;
+  protected readonly Ast = Ast;
 }
 interface Node {
   name: string;

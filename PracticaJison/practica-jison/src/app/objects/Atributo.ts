@@ -25,4 +25,5 @@ export  class Atributo{
 
     base_array[base_array.length-1].statem[base_array[base_array.length-1].statem.length-1].statemens.push(stms);
   }
+
 }

@@ -19,6 +19,7 @@ import {ConditionSelect} from "../../models/condition_select";
 import {Where} from "../../models/where";
 import {Limit} from "../../models/limit";
 import {OffSet} from "../../models/off_set";
+import {Ast} from "../../models/ast";
 
 declare  var minisql:any;
 export class MiniSql{
@@ -65,6 +66,7 @@ export class MiniSql{
      /* console.log(table)
 
       console.log("retornare la tabla")*/
+      Ast.getInstancia().arbol_ast= this.instructions;
       console.log(MyErrorsMini.getInstanci())
       return table;
       /*console.log(JSON.stringify(this.instructions))*/
