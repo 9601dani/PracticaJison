@@ -22,8 +22,14 @@ export class IfState extends Instruction{
   }
   run(table: TablaSimbolos): any {
   const variable1 = this.instruction.run(table);
+/*  let valor_variable = table.getWithId(variable1)
+    if(valor_variable!.value){
+      MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.column,"Semantico","La variable "+valor_variable!.value+" no tiene valor definido"));
+      return
+    }*/
   if(!variable1){
     MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.column,"Semantico","Error de operacion en IF"));
+    return
   }
       if(variable1.value==true){
         this.bloque_verdadero?.forEach((elemento)=>{

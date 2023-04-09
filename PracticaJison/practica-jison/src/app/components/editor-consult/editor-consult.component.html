@@ -1,10 +1,12 @@
 <div class="container" >
   <div class="row ">
+    <h6>Columna {{this.columna}} Linea {{this.linea}}</h6>
     <div class="col-12 mt-5" style="height: 80vh">
       <ngs-code-editor style="height: 100%"
                        [theme]="theme"
                        [codeModel]="codeModel"
-                       [options]="options">
+                       [options]="options"
+                       (valueChanged)="onCodeChanged($event)">
       </ngs-code-editor>
     </div>
   </div>
@@ -33,13 +35,14 @@
     </table>
 </div>
   <div class="row" *ngIf="table_simbolos && MyErrorsMini.getInstanci().message_error.length==0">
+    <h6 class="align-content-center">*No se encontraron errores*</h6>
     <h5 class="align-content-center"> Presentando tabla de simbolos</h5>
     <table class="table">
       <thead>
       <tr>
         <th scope="col">ID</th>
         <th scope="col">Tipo</th>
-        <th scope="col">Valor</th>
+        <th scope="col">Valor Actual</th>
       </tr>
       </thead>
       <tbody>

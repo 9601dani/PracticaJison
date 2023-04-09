@@ -242,5 +242,9 @@ h:  ENTERO {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.Value
     | VARIABLE {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.VARIABLE)}
     | LITERAL {$$= new yy.Value(this._$.first_line,this._$.first_column,$1,yy.ValueType.LITERAL)}
     | LPARENT a RPARENT {$$ = $2 }
+         | error
+                                             %{
+                                                         yy.MyErrorsMini.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Sintactico"," se obtuvo "+ yytext +" pero no se esperaba"));
+                                             %}
 ;
 

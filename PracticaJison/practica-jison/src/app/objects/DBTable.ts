@@ -10,6 +10,7 @@ export class DBTable {
       this.statem=[];
   }
 
+
   static constructo(state:Array<Stmt>,statem: Array<Stmt>){
 
       statem.forEach((elemento:Stmt, indice:number)=>{

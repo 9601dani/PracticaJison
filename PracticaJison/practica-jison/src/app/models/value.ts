@@ -1,6 +1,8 @@
 import {Instruction} from "./instruction";
 import {TablaSimbolos} from "./tabla_simbolos";
 import {Variable, VariableType} from "./variable";
+import {MyErrorsMini} from "../ManageError/MyErrorsMini";
+import {DefManageError} from "../ManageError/DefManageError";
 
 export class Value extends Instruction{
   value:any;

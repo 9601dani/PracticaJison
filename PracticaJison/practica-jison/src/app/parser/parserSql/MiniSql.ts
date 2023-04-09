@@ -70,9 +70,7 @@ export class MiniSql{
       /*console.log(JSON.stringify(this.instructions))*/
     }catch(error){
       console.log(error)
-      console.log(MyErrorsMini.getInstanci())
-
-      return undefined;
+      throw new Error("sin datos en parser")
     }
   }
 }
