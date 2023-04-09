@@ -81,7 +81,6 @@ inic
               }
               errores_lexicos=[];
         %}
-
   ;
 
 statements
@@ -110,6 +109,7 @@ declare_prod
 ;
 variablePro: variablePro COMA VARIABLE {$$=$1; $$.push($3);  }
             | VARIABLE {$$=[]; $$.push($1);}
+            |
 ;
 type: INT { $$ = yy.VariableType.INT}
 	| DECIMAL { $$ = yy.VariableType.DECIMAL}
