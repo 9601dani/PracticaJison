@@ -4,18 +4,15 @@ import {Where} from "./where";
 import {Limit} from "./limit";
 import {OffSet} from "./off_set";
 
-export class ConditionSelect extends Instruction{
+export class ConditionSelect{
   statement_where:Where;
   statement_limit:Limit;
   statement_off_set:OffSet;
 
   constructor(line:number, column:number, statement_where:Where,statement_limit:Limit,statement_off_set:OffSet) {
-    super(line,column);
     this.statement_where= statement_where
     this.statement_limit= statement_limit
     this.statement_off_set= statement_off_set
-  }
-  run(table: TablaSimbolos): any {
   }
 
 }

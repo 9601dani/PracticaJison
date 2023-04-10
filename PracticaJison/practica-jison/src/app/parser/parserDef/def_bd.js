@@ -203,18 +203,14 @@ case 19:
                                                      yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$$[$0].name_atribute+" no existe en la tabla"));
                                                      ex=true;
                                                     }else{
-                                                                                       if($$[$0].property.type_property != yys.type_property){
-                                                                                        yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$$[$0].name_atribute+" debe ser de tipo "+ mostrarVariable(yys.type_property)));
-                                                                                      ex=true;
-                                                                                       }
-
-                                                                                       }
+                                                      if($$[$0].property.type_property != yys.type_property){
+                                                         yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$$[$0].name_atribute+" debe ser de tipo "+ mostrarVariable(yys.type_property)));
+                                                         ex=true;
+                                                      }
+                                                    }
                       if(!ex){
                           this.$ = $$[$0-2];
                           this.$.push($$[$0]);
-
-                      }else{
-                      ex=false;
                       }
               
 break;
@@ -243,8 +239,6 @@ case 20:
                         if(!ex){
                           this.$ = [];
                           this.$.push($$[$0]);
-                        }else{
-                        ex=false;
                         }
 			                
 break;

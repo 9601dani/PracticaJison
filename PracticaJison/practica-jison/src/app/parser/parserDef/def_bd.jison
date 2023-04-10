@@ -190,18 +190,14 @@ def_values_of: def_values_of COMA table_values %{
                                                      yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" no existe en la tabla"));
                                                      ex=true;
                                                     }else{
-                                                                                       if($3.property.type_property != yys.type_property){
-                                                                                        yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" debe ser de tipo "+ mostrarVariable(yys.type_property)));
-                                                                                      ex=true;
-                                                                                       }
-
-                                                                                       }
+                                                      if($3.property.type_property != yys.type_property){
+                                                         yy.MyErrors.nuevoE( new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico","El campo "+$3.name_atribute+" debe ser de tipo "+ mostrarVariable(yys.type_property)));
+                                                         ex=true;
+                                                      }
+                                                    }
                       if(!ex){
                           $$ = $1;
                           $$.push($3);
-
-                      }else{
-                      ex=false;
                       }
               %}
 			| table_values %{
@@ -228,8 +224,6 @@ def_values_of: def_values_of COMA table_values %{
                         if(!ex){
                           $$ = [];
                           $$.push($1);
-                        }else{
-                        ex=false;
                         }
 			                %}
 ;

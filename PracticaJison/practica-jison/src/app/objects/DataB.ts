@@ -1,7 +1,7 @@
 import {Propiedad} from "./Propiedad";
 
 export class DataB {
-  name_table!:String;
+  name_table!:string;
   propiedades!: Array<Propiedad>;
 
   constructor(nameTable:string,propiedades:Array<Propiedad>) {

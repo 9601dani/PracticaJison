@@ -1,8 +1,9 @@
 import {Stmt} from "./Stmt";
+import {DBTable} from "./DBTable";
 
 export class Consulta {
   private static instance: Consulta;
-  array_statemts!:Array<Stmt>;
+  array_statemts!:Array<Array<Stmt>>;
   constructor() {
   }
 

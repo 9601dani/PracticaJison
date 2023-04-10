@@ -8,6 +8,8 @@ import {DefManageError} from "../../ManageError/DefManageError";
 import {Instruction} from "../../models/instruction";
 import {DBTable} from "../../objects/DBTable";
 import {Ast} from "../../models/ast";
+import {Consulta} from "../../objects/Consulta";
+import {ConsultaFinal} from "../../objects/ConsultaFinal";
  declare var minisql: any;
 declare var ast: DBTable[];
 
@@ -42,12 +44,15 @@ export class EditorConsultComponent {
 
   onCompile(){
     try {
+      Consulta.getInstanciaConsultas().clear()
+      ConsultaFinal.getInstanciaConsultas().clear()
       const par = new MiniSql(this.codeModel.value);
       this.table_simbolos = par.parse();
       if(this.table_simbolos){
         console.log(this.table_simbolos)
         this.myNodes=this.convertToTree(JSON.stringify(this.table_simbolos))
         console.log(`hice todo bien`)
+        console.log(Consulta.getInstanciaConsultas().array_statemts)
       }
     }catch (err){
       MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.linea,this.columna,"Error Inesperado","Al parecer no estas ingresando ningun texto valido"));
