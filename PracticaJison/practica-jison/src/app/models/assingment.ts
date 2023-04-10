@@ -29,7 +29,7 @@ export class Assingment extends Instruction{
       if(this.verificarTipo(variable1,operation)){
         variable1.value= operation.value;
       }else{
-        console.log("distinto")
+        /*console.log("distinto")*/
         if(variable1.type== VariableType.DECIMAL){
           if(operation.type == VariableType.INT){
             variable1.value= operation.value;

@@ -59,7 +59,7 @@ export class Select extends Instruction{
 
 
             }else{
-              console.log(this.limits.statement_limit.valor.value)
+             /* console.log(this.limits.statement_limit.valor.value)*/
             }
           }else{
             /*aqui va si no hay limite*/
@@ -101,7 +101,7 @@ export class Select extends Instruction{
                 ConsultaFinal.getInstanciaConsultas().consultas.push()
               }
             }else{
-              console.log(this.limits.statement_limit.valor.value)
+             /* console.log(this.limits.statement_limit.valor.value)*/
             }
           }else{
            /*aqui va si no hay limite*/

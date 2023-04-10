@@ -950,7 +950,7 @@ case 45:
                         
 break;
 case 46:
-                        console.log('fin de archivo');
+
                         return "EOF";
                     
 break;

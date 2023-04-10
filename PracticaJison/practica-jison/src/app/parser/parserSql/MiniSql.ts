@@ -49,7 +49,7 @@ export class MiniSql{
     minisql.yy.Where= Where;
     minisql.yy.Limit=Limit;
     minisql.yy.OffSet= OffSet;
-    console.log(minisql);
+   /* console.log(minisql);*/
   }
 
   parse():TablaSimbolos| undefined{
@@ -62,16 +62,17 @@ export class MiniSql{
       this.instructions.forEach(i =>{
         i.run(table);
       })
+      console.log("ARBOL AST: ")
      console.log(this.instructions);
      /* console.log(table)
 
       console.log("retornare la tabla")*/
       Ast.getInstancia().arbol_ast= this.instructions;
-      console.log(MyErrorsMini.getInstanci())
+      /*console.log(MyErrorsMini.getInstanci())*/
       return table;
       /*console.log(JSON.stringify(this.instructions))*/
     }catch(error){
-      console.log(error)
+      /*console.log(error)*/
       throw new Error("sin datos en parser")
     }
   }

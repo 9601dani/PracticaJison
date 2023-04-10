@@ -44,7 +44,7 @@ export class Value extends Instruction{
         Object.assign(variable,vari);
         return variable;
     }
-    console.log("retorne undefined")
+   /* console.log("retorne undefined")*/
     return undefined;
 
   }

@@ -61,7 +61,7 @@ let errores_lexicos=[];
                           return 'LITERAL';
                         %}
 <<EOF>>             %{
-                        console.log('fin de archivo');
+
                         return "EOF";
                     %}
 .                   %{
