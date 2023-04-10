@@ -10,6 +10,10 @@ export class OffSet extends Instruction{
   }
 
   run(table: TablaSimbolos): any {
+    const vaariable= this.operation.run(table)
+    if(vaariable){
+
+    }
   }
 
 }

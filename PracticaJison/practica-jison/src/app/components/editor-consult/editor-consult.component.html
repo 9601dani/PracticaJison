@@ -54,5 +54,22 @@
         </tbody>
       </table>
   </div>
+<div class="row" *ngIf="ConsultaFinal.getInstanciaConsultas().consultas.length>0">
+  <h6 class="align-content-center">Consultas</h6>
+
+  <table class="table">
+    <thead>
+    <tr *ngFor="let variable of ConsultaFinal.getInstanciaConsultas().consultas ">
+      <th>{{ variable.objDb.propiedades }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let variable of ConsultaFinal.getInstanciaConsultas().consultas">
+      <td>{{ variable.statem}}</td>
+    </tr>
+    </tbody>
+  </table>
+
+</div>
 
 </div>

@@ -20,6 +20,7 @@ declare var ast: DBTable[];
   styleUrls: ['./editor-consult.component.css']
 })
 export class EditorConsultComponent {
+  cod!: DBTable
   codigo: string = '';
   columna!:number;
   linea!:number;
@@ -53,6 +54,7 @@ export class EditorConsultComponent {
         this.myNodes=this.convertToTree(JSON.stringify(this.table_simbolos))
 /*        console.log(`hice todo bien`)
         console.log(Consulta.getInstanciaConsultas().array_statemts)*/
+        console.log(Consulta.getInstanciaConsultas().array_statemts)
       }
     }catch (err){
       MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.linea,this.columna,"Error Inesperado","Al parecer no estas ingresando ningun texto valido"));
@@ -88,6 +90,8 @@ export class EditorConsultComponent {
   protected readonly MyErrors = MyErrors;
   protected readonly MyErrorsMini = MyErrorsMini;
   protected readonly Ast = Ast;
+  protected readonly ConsultaFinal = ConsultaFinal;
+  protected readonly DBTable = DBTable;
 }
 interface Node {
   name: string;
