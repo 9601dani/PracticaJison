@@ -87,6 +87,7 @@ inic : instruc EOF
                yy.MyErrors.nuevoE(new yy.DefManageError(errores_lexicos[i].linea,errores_lexicos[i].columna,errores_lexicos[i].type,errores_lexicos[i].des))
             }
             errores_lexicos=[];
+
       %}
       | EOF
     %{
@@ -99,13 +100,9 @@ inic : instruc EOF
 ;
 
 instruc : instruc data_base
-      %{
-      $$ = $1; $$.push($2);
-      %}
+
 			| data_base
-			%{ $$ = [];
-			$$.push($1);
-			%}
+
 ;
 
 data_base
@@ -118,19 +115,7 @@ data_base
         }
   %}
   | def_table_of PUNTO_COMA %{
-         let tablas = yy.BaseDeDatos.getArrayTable();
-            if(tablas.length===0){
-                yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," no hay una tabla definida anteriormente "));
-            }else{
-              let table= tablas[tablas.length-1];
-              if(tablas[tablas.length-1].objDb.propiedades.length === tamaño){
-                table.statem.push($1);
-                tamaño=0;
-              }else{
-                    yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," El numero de atributos requeridos no es igual "));
-              }
-
-            }
+         {$$=1}
     %}
     | error
                  %{
@@ -160,16 +145,46 @@ type: INT { $$ = yy.TypePropiedad.INT}
 def_table_of
            : def_table_of  def_values_of PUNTO_COMA  %{
                 if(!ex){
-                   $$ = $1
-                   $$.push($2)
-                   tamaño= $2.length;
+
+                     tamaño= $2.length;
+                   let tablas = yy.BaseDeDatos.array_tables;
+                               if(tablas.length===0){
+                                   yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," no hay una tabla definida anteriormente "));
+                               }else{
+                                 let table= tablas[tablas.length-1];
+                                 if(tablas[tablas.length-1].objDb.propiedades.length === tamaño){
+
+                                   table.statem.push(new yy.Stmt($2));
+
+                                   tamaño=0;
+                                 }else{
+                                       yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," El numero de atributos requeridos no es igual "));
+                                 }
+
+                               }
+
                 }
                 ex=false;
            %}
-           | def_values_of  %{$$ = []; ;
+           | def_values_of  %{
                       if(!ex){
                       tamaño= $1.length;
-                        $$.push($1)
+                         let tablas = yy.BaseDeDatos.array_tables;
+                                     if(tablas.length===0){
+                                         yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," no hay una tabla definida anteriormente "));
+                                     }else{
+                                       let table= tablas[tablas.length-1];
+                                       if(tablas[tablas.length-1].objDb.propiedades.length === tamaño){
+
+
+                                         table.statem.push(new yy.Stmt($1));
+
+                                         tamaño=0;
+                                       }else{
+                                             yy.MyErrors.nuevoE(new yy.DefManageError(this._$.first_line,this._$.first_column,"Semantico"," El numero de atributos requeridos no es igual "));
+                                       }
+
+                                     }
                       }
                       ex=false;
            %}
@@ -223,55 +238,64 @@ def_values_of: def_values_of COMA table_values %{
 
                         if(!ex){
                           $$ = [];
-                          $$.push($1);
+                         $$.push($1)
                         }
 			                %}
 ;
 
-table_values: LITERAL IGUAL a { $$= new yy.Atributo($3,$1) }
+table_values:  LITERAL IGUAL e
+                %{
+                if($3%1==0){
+                $$= new yy.Atributo(new yy.TypeProStmt($3, yy.TypePropiedad.INT), $1)
+                }else{
+                 $$= new yy.Atributo(new yy.TypeProStmt($3, yy.TypePropiedad.DECIMAL), $1)
+                }
+                %}
+               | LITERAL IGUAL  CADENA { $$= new yy.Atributo(new yy.TypeProStmt($3, yy.TypePropiedad.STRING), $1)}
+               |LITERAL IGUAL a  {$$= new yy.Atributo(new yy.TypeProStmt($3, yy.TypePropiedad.BOOLEAN), $1)}
 ;
 
 a
   : a OR b
-    { $$ = new yy.TypeProStmt($1 || $3, yy.TypePropiedad.BOOLEAN)}
+    { $$ = Boolean($1)|| Boolean($2)}
   | b
     { $$ = $1; }
   ;
 
 b
   : b AND c
-     { $$ = new yy.TypeProStmt($1 && $3, yy.TypePropiedad.BOOLEAN)}
+     { $$ = Boolean($1) && Boolean($2)}
   | c
     { $$ = $1; }
   ;
 
-c : NOT c  { $$ = new yy.TypeProStmt(!$2, yy.TypePropiedad.BOOLEAN)}
+c : NOT c  { $$ = Boolean(!$2)}
    | d  { $$= $1}
    ;
 
-d: d DOBLE_IGUAL e  { $$ = new yy.TypeProStmt($1 == $3, yy.TypePropiedad.BOOLEAN)}
-  |d NO_IGUAL e  { $$ = new yy.TypeProStmt($1 != $3, yy.TypePropiedad.BOOLEAN)}
-  |d MENOR_QUE e  { $$ = new yy.TypeProStmt($1 < $3, yy.TypePropiedad.BOOLEAN)}
-  |d MENOR_IGUAL_QUE e  { $$ = new yy.TypeProStmt($1 <= $3, yy.TypePropiedad.BOOLEAN)}
-  |d MAYOR_QUE e  { $$ = new yy.TypeProStmt($1 > $3, yy.TypePropiedad.BOOLEAN)}
-  |d MAYOR_IGUAL_QUE e  { $$ = new yy.TypeProStmt($1 >= $3, yy.TypePropiedad.BOOLEAN)}
-  | e {$$=$1}
+d: d DOBLE_IGUAL e  { $$ = $1 == $3}
+  |d NO_IGUAL e  { $$ = $1 != $3}
+  |d MENOR_QUE e  { $$ = $1 < $3}
+  |d MENOR_IGUAL_QUE e { $$ = $1 <= $3}
+  |d MAYOR_QUE e { $$ = $1 > $3}
+  |d MAYOR_IGUAL_QUE e  { $$ = $1 >= $3}
+  | i {$$=$1}
 ;
 
 e: e MAS f
 %{
     if(($1+$3)% 1 == 0){
-         $$ = new yy.TypeProStmt($1+$3, yy.TypePropiedad.INT);
+         $$ = $1+$3;
     }else{
-         $$ = new yy.TypeProStmt($1 + $3, yy.TypePropiedad.DECIMAL);
+         $$ = $1+$3;
     }
 %}
   | e MENOS f
 %{
       if(($1-$3)% 1 == 0){
-         $$ = new yy.TypeProStmt($1 - $3, yy.TypePropiedad.INT);
+         $$ = $1-$3;
       }else{
-         $$ = new yy.TypeProStmt($1 - $3, yy.TypePropiedad.DECIMAL);
+         $$ = $1-$3;
       }
 %}
   | f {$$=$1}
@@ -280,33 +304,40 @@ e: e MAS f
 f: f POR g
 %{
       if(($1*$3)% 1 == 0){
-         $$ = new yy.TypeProStmt($1 * $3 ,yy.TypePropiedad.INT);
+         $$ = $1*$3;
       }else{
-         $$ = new yy.TypeProStmt($1 * $3, yy.TypePropiedad.DECIMAL);
+          $$ = $1*$3;
       }
 %}
   | f DIVIDE g
 %{
-      if(($1/$3)% 1 == 0){
-         $$ = new yy.TypeProStmt($1 / $3, yy.TypePropiedad.INT);
+
+      if($3==0){
+         $$ = $1/1;
       }else{
-         $$ = new yy.TypeProStmt($1 / $3, yy.TypePropiedad.DECIMAL);
+       if(($1/$3)% 1 == 0){
+               $$ = $1/$3;
+            }else{
+              $$ = $1/$3;
+            }
       }
+
 %}
   | g {$$=$1}
 ;
 
 g: MENOS h {$$ = -$2}
-  | MAS h {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.DECIMAL);}
+  | MAS h {$$ = $2;}
   | h {$$=$1}
 ;
 
-h:  ENTERO {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.INT);}
-    | NUM_DECIMAL {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.DECIMAL);}
-    | CADENA {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.STRING);}
-    | FALSE {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.BOOLEAN);}
-    | TRUE {$$ = new yy.TypeProStmt($1, yy.TypePropiedad.BOOLEAN);}
-    | LPARENT a RPARENT {$$ = $2 }
+h:  ENTERO {$$ = Number($1);}
+    | NUM_DECIMAL {$$ = Number($1);}
+    | LPARENT e RPARENT {$$ = $2 }
+;
+i:      FALSE {$$ = false}
+       | TRUE {$$ = true}
+       | LPARENT a RPARENT {$$ = $2 }
 ;
 
 

@@ -5,8 +5,8 @@ import {BaseDeDatos} from "./BaseDeDatos";
 
 export  class Atributo{
   property!: TypeProStmt;
-  name_atribute: any;
-  constructor(property: TypeProStmt, value : any){
+  name_atribute: string;
+  constructor(property: TypeProStmt, value : string){
     this.property= property;
     this.name_atribute= value;
   }
@@ -25,5 +25,7 @@ export  class Atributo{
 
     base_array[base_array.length-1].statem[base_array[base_array.length-1].statem.length-1].statemens.push(stms);
   }
-
+  toString(){
+    return String(this.name_atribute)
+  }
 }

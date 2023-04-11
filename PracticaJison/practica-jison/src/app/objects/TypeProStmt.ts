@@ -1,4 +1,5 @@
 import {TypePropiedad} from "./TypePropiedad";
+import {DBTable} from "./DBTable";
 
 export class TypeProStmt{
   value_property!: any;

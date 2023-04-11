@@ -10,6 +10,7 @@ import {DBTable} from "../../objects/DBTable";
 import {Ast} from "../../models/ast";
 import {Consulta} from "../../objects/Consulta";
 import {ConsultaFinal} from "../../objects/ConsultaFinal";
+import {BaseDeDatos} from "../../objects/BaseDeDatos";
  declare var minisql: any;
 declare var ast: DBTable[];
 
@@ -20,6 +21,7 @@ declare var ast: DBTable[];
   styleUrls: ['./editor-consult.component.css']
 })
 export class EditorConsultComponent {
+
   cod!: DBTable
   codigo: string = '';
   columna!:number;
@@ -54,7 +56,8 @@ export class EditorConsultComponent {
         this.myNodes=this.convertToTree(JSON.stringify(this.table_simbolos))
 /*        console.log(`hice todo bien`)
         console.log(Consulta.getInstanciaConsultas().array_statemts)*/
-        console.log(Consulta.getInstanciaConsultas().array_statemts)
+        console.log(ConsultaFinal.getInstanciaConsultas().consultas)
+
       }
     }catch (err){
       MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.linea,this.columna,"Error Inesperado","Al parecer no estas ingresando ningun texto valido"));
@@ -92,6 +95,8 @@ export class EditorConsultComponent {
   protected readonly Ast = Ast;
   protected readonly ConsultaFinal = ConsultaFinal;
   protected readonly DBTable = DBTable;
+  protected readonly Consulta = Consulta;
+  protected readonly BaseDeDatos = BaseDeDatos;
 }
 interface Node {
   name: string;

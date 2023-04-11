@@ -4,10 +4,9 @@ import {Atributo} from "./Atributo";
 import {BaseDeDatos} from "./BaseDeDatos";
 export class DBTable {
   objDb!: DataB;
-  statem !: Array<Stmt>;
+  statem : Stmt[]=[];
   constructor(objDb:DataB) {
       this.objDb=objDb;
-      this.statem=[];
   }
 
 

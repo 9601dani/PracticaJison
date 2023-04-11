@@ -41,20 +41,27 @@ export class Select extends Instruction{
             const limit = this.limits.statement_limit.run(table)
             if(limit){
               const stms:Array<Stmt>=[]
+              const st:Array<Atributo>=[]
               for (let i=0; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
                 if(i>limit.value-1){
                   break;
                 }
-               stms.push((this.tabla_seleccionada as DBTable).statem[i])
+
+  /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                stms.push((this.tabla_seleccionada as DBTable).statem[i])
               }
-              Consulta.getInstanciaConsultas().array_statemts.push(stms)
+              let nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
+              nData.statem= stms
+              console.log("--------")
+              console.log(stms)
+              ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
             }else{
              /* console.log(this.limits.statement_limit.valor.value)*/
               return
             }
           }else{
             /*aqui va si no hay limite*/
-            Consulta.getInstanciaConsultas().array_statemts.push((this.tabla_seleccionada as DBTable).statem)
+            ConsultaFinal.getInstanciaConsultas().consultas.push((this.tabla_seleccionada as DBTable))
           }
 
         }else{
@@ -83,14 +90,16 @@ export class Select extends Instruction{
                 }
                 stms.push((this.tabla_seleccionada as DBTable).statem[i])
               }
-              Consulta.getInstanciaConsultas().array_statemts.push(stms)
+              const nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
+              nData.statem=stms
+              ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
             }else{
               /* console.log(this.limits.statement_limit.valor.value)*/
               return
             }
           }else{
             /*aqui va si no hay limite*/
-            Consulta.getInstanciaConsultas().array_statemts.push((this.tabla_seleccionada as DBTable).statem)
+            ConsultaFinal.getInstanciaConsultas().consultas.push((this.tabla_seleccionada as DBTable))
           }
 
         }

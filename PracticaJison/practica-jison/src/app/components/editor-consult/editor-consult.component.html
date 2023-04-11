@@ -55,21 +55,23 @@
       </table>
   </div>
 <div class="row" *ngIf="ConsultaFinal.getInstanciaConsultas().consultas.length>0">
-  <h6 class="align-content-center">Consultas</h6>
+  <div *ngFor="let tabla of ConsultaFinal.getInstanciaConsultas().consultas">
+    <div>
+      <h3> Consulta:</h3>
+    </div>
+    <table class="table">
+      <thead>
+      <tr>
+        <th scope="col" *ngFor="let propiedad of tabla.objDb.propiedades">{{propiedad.name_property}}</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let registro of tabla.statem">
+        <td *ngFor="let atributos of registro.statemens">{{atributos.property.value_property}}</td>
+      </tr>
+      </tbody>
 
-  <table class="table">
-    <thead>
-    <tr *ngFor="let variable of ConsultaFinal.getInstanciaConsultas().consultas ">
-      <th>{{ variable.objDb.propiedades }}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let variable of ConsultaFinal.getInstanciaConsultas().consultas">
-      <td>{{ variable.statem}}</td>
-    </tr>
-    </tbody>
-  </table>
-
+    </table>
+  </div>
 </div>
-
 </div>

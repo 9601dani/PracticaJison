@@ -1,8 +1,10 @@
 import {Consulta} from "./Consulta";
 import {DBTable} from "./DBTable";
+import {Atributo} from "./Atributo";
 
 export class ConsultaFinal{
   consultas: Array<DBTable>
+  query!:string;
   private static instance: ConsultaFinal;
   constructor() {
     this.consultas=[]

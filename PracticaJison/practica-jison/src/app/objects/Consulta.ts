@@ -5,6 +5,7 @@ export class Consulta {
   private static instance: Consulta;
   array_statemts!:Array<Array<Stmt>>;
   constructor() {
+    this.array_statemts=[]
   }
 
   public static getInstanciaConsultas():Consulta{
