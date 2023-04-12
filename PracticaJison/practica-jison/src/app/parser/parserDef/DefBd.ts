@@ -42,14 +42,16 @@ export class DefBd{
       }*/
       /*var models= new BaseDeDatos(array);*/
       /*ESTE METODO SE DEBE QUITAR*/
-      console.log(BaseDeDatos.getInstancia().array_tables);
+      /*console.log(BaseDeDatos.getInstancia().array_tables);*/
+
       for(let i=0; i< BaseDeDatos.getInstancia().array_tables.length;i++){
         for(let j=0; j<BaseDeDatos.getInstancia().array_tables[i].statem.length;j++){
+          const order= BaseDeDatos.getInstancia().array_tables[i].objDb.propiedades
           for(let k=0; k<BaseDeDatos.getInstancia().array_tables[i].statem[j].statemens.length;k++){
             BaseDeDatos.getInstancia().array_tables[i].statem[j].statemens.sort((a,b)=>{
-              const order= BaseDeDatos.getInstancia().array_tables[i].objDb.propiedades
+
               for(let prop of order){
-                const cmp = prop.name_property.localeCompare(BaseDeDatos.getInstancia().array_tables[i].statem[j].statemens[k].name_atribute);
+                const cmp = prop.name_property.localeCompare(a.name_atribute) - prop.name_property.localeCompare(b.name_atribute);
                 if(cmp!==0){
                   return cmp;
                 }
@@ -59,8 +61,9 @@ export class DefBd{
           }
         }
       }
+
     } catch(error) {
-     console.error(error);
+    /* console.error(error);*/
     }
   }
 }

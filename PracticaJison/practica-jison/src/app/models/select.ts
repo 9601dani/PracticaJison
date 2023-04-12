@@ -42,63 +42,140 @@ export class Select extends Instruction{
             if(limit){
               const stms:Array<Stmt>=[]
               const st:Array<Atributo>=[]
-              for (let i=0; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
-                if(i>limit.value-1){
-                  break;
-                }
+              if(this.limits.statement_off_set){
+                const offset= this.limits.statement_off_set.run(table)
+                if(offset){
+                  for (let i=offset.value; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                    if(i>offset.value+limit.value-1){
+                      break;
+                    }
 
-  /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
-                stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                    /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                    stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                  }
+                }
+              }else{
+                for (let i=0; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                  if(i>limit.value-1){
+                    break;
+                  }
+
+                  /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                  stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                }
               }
               let nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
               nData.statem= stms
-              console.log("--------")
-              console.log(stms)
               ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
             }else{
              /* console.log(this.limits.statement_limit.valor.value)*/
+              MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.line,"Semantico","La condicion de LIMIT no tiene un valor valido "));
               return
             }
+          }else if(this.limits.statement_off_set){
+
+              const offset= this.limits.statement_off_set.run(table)
+              const stms:Array<Stmt>=[]
+              if(offset){
+                console.log(offset.value)
+                for (let i=offset.value; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                  /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                  stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                }
+                let nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
+                nData.statem= stms
+                ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
+              }
           }else{
-            /*aqui va si no hay limite*/
             ConsultaFinal.getInstanciaConsultas().consultas.push((this.tabla_seleccionada as DBTable))
           }
 
         }else{
           //TODO: comprobar que los ids sean los que pide;
+          let propiedasd_nueva:Array<Propiedad>=[];
           for (let i=0; i< this.ids.length;i++){
             (this.tabla_seleccionada as DBTable).objDb.propiedades.forEach((stmt)=>{
               if(stmt.name_property== this.ids[i]){
+                propiedasd_nueva.push(stmt)
                 this.encontrado=true;
               }
             })
+          }
             if(!this.encontrado){
-              MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.line,"Semantico","Al parecer el campo *"+this.ids[i]+"* no existe en la tabla "+this.name));
+              MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.line,"Semantico","Al parecer el campo  no existe en la tabla "+this.name));
               return
             }else{
+              const nueva_dbTable = new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table, propiedasd_nueva));
+              let nuevo_array_atris: Array<Atributo>=[]
+              let nuevo_array_stm:Stmt[]=[]
               this.encontrado=false;
+              (this.tabla_seleccionada as DBTable).statem.forEach((statem)=>{
+                statem.statemens.forEach((array_nuevo)=>{
+                  for (let i=0;i<this.ids.length;i++){
+                    if(array_nuevo.name_atribute== this.ids[i]){
+                      nuevo_array_atris.push(new Atributo(array_nuevo.property,array_nuevo.name_atribute))
+                    }
+                  }
+
+                })
+                nuevo_array_stm.push(new Stmt(nuevo_array_atris))
+                nuevo_array_atris=[]
+              })
+
+              nueva_dbTable.statem=(nuevo_array_stm)
+              this.tabla_seleccionada= nueva_dbTable
               /*aqui encontro el dato*/
             }
-          }
           if(this.limits.statement_limit){
             const limit = this.limits.statement_limit.run(table)
             if(limit){
               const stms:Array<Stmt>=[]
-              for (let i=0; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
-                if(i>limit.value-1){
-                  break;
+              const st:Array<Atributo>=[]
+              if(this.limits.statement_off_set){
+                const offset= this.limits.statement_off_set.run(table)
+                if(offset){
+                  for (let i=offset.value; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                    if(i>offset.value+limit.value-1){
+                      break;
+                    }
+
+                    /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                    stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                  }
                 }
-                stms.push((this.tabla_seleccionada as DBTable).statem[i])
+              }else{
+                for (let i=0; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                  if(i>limit.value-1){
+                    break;
+                  }
+
+                  /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                  stms.push((this.tabla_seleccionada as DBTable).statem[i])
+                }
               }
-              const nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
-              nData.statem=stms
+              let nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
+              nData.statem= stms
               ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
             }else{
               /* console.log(this.limits.statement_limit.valor.value)*/
+              MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.line,"Semantico","La condicion de LIMIT no tiene un valor valido "));
               return
             }
+          }else if(this.limits.statement_off_set){
+
+            const offset= this.limits.statement_off_set.run(table)
+            const stms:Array<Stmt>=[]
+            if(offset){
+              console.log(offset.value)
+              for (let i=offset.value; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
+                /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
+                stms.push((this.tabla_seleccionada as DBTable).statem[i])
+              }
+              let nData=new DBTable(new DataB((this.tabla_seleccionada as DBTable).objDb.name_table,(this.tabla_seleccionada as DBTable).objDb.propiedades))
+              nData.statem= stms
+              ConsultaFinal.getInstanciaConsultas().consultas.push(nData);
+            }
           }else{
-            /*aqui va si no hay limite*/
             ConsultaFinal.getInstanciaConsultas().consultas.push((this.tabla_seleccionada as DBTable))
           }
 
@@ -120,12 +197,15 @@ export class Select extends Instruction{
     let base_datos= BaseDeDatos.getInstancia().array_tables;
     let select_table:string= "NO";
     // @ts-ignore
-    for(let i=0; i<base_datos.length;i++){
-      if(this.name==base_datos[i].objDb.name_table){
-        return base_datos[i]
+    if(base_datos){
+      for(let i=0; i<base_datos.length;i++){
+        if(this.name==base_datos[i].objDb.name_table){
+          return base_datos[i]
+        }
       }
+      return select_table
     }
-    return select_table
+   return "NO"
   }
 
 }

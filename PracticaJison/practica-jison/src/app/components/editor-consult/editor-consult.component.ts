@@ -56,7 +56,7 @@ export class EditorConsultComponent {
         this.myNodes=this.convertToTree(JSON.stringify(this.table_simbolos))
 /*        console.log(`hice todo bien`)
         console.log(Consulta.getInstanciaConsultas().array_statemts)*/
-        console.log(ConsultaFinal.getInstanciaConsultas().consultas)
+        /*console.log(ConsultaFinal.getInstanciaConsultas().consultas)*/
 
       }
     }catch (err){
