@@ -166,7 +166,6 @@ export class Select extends Instruction{
             const offset= this.limits.statement_off_set.run(table)
             const stms:Array<Stmt>=[]
             if(offset){
-              console.log(offset.value)
               for (let i=offset.value; i<(this.tabla_seleccionada as DBTable).statem.length;i++){
                 /*              console.log((this.tabla_seleccionada as DBTable).statem[i].statemens)*/
                 stms.push((this.tabla_seleccionada as DBTable).statem[i])
@@ -184,7 +183,6 @@ export class Select extends Instruction{
         return
 
     }catch (erro){
-      console.log(erro)
       MyErrorsMini.getInstanci().nuevoE(new DefManageError(this.line,this.line,"Semantico","Al parecer no existe una base de datos para realziar la consulta"));
       return
     }
